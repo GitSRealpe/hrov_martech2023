@@ -1,0 +1,52 @@
+<launch>
+    <!-- Configurable arguments -->
+    <arg name="robot_name" default="girona1000"/>
+    <arg name="enable_keyboard" default="false"/>
+    <arg name="enable_joystick" default="true"/>
+    <arg name="joystick_device" default="/dev/input/js0"/>
+    <arg name="enable_gui" default="true"/>
+    <arg name="enable_rviz" default="true"/>
+
+    <!-- perfect girona -->
+    <!-- <include file="$(find hrov_martech2023)/launch/utils/fake_girona1000.launch"/> -->
+    <include file="$(find hrov_martech2023)/launch/utils/octomap.launch"/>
+
+    <!-- Static transform -->
+    <node name="world2ned" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 3.1415 world world_ned 100"/>
+
+    <!-- Namespace with robot name -->
+    <group ns="$(arg robot_name)">
+        <!-- Load configs -->
+        <include file="$(find hrov_martech2023)/launch/utils/girona1000_colasim.launch">
+            <arg name="robot_name" value="$(arg robot_name)"/>
+            <arg name="enable_keyboard" value="$(arg enable_keyboard)"/>
+            <arg name="enable_joystick" value="$(arg enable_joystick)"/>
+            <arg name="joystick_device" value="$(arg joystick_device)"/>
+            <arg name="enable_gui" value="$(arg enable_gui)"/>
+        </include>
+
+        <!-- Robot description -->
+        <!-- usar un xacro diferente para custom payload -->
+        <arg name="robot_xacro" default="$(find girona1000_description)/urdf/payload.urdf.xacro"/>
+        <param name="robot_description" command="$(find xacro)/xacro --inorder '$(arg robot_xacro)' robot_namespace:=$(arg robot_name)"/>
+
+        <!-- Robot state publisher -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
+
+        <!-- Run Simulator -->
+        <arg name="simulation_data" value="$(find hrov_martech2023)/data"/>
+        <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/girona1000_tank.scn"/>
+        <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/corridor.scn"/> -->
+        <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/cylinder.scn"/> -->
+        <arg name="simulation_rate" value="100.0"/>
+        <arg name="graphics_resolution" value="1440 900"/>
+        <arg name="graphics_quality" value="low"/>
+        <node name="stonefish_simulator" pkg="stonefish_ros" type="parsed_simulator" args="$(arg simulation_data) $(arg scenario_description) $(arg simulation_rate) $(arg graphics_resolution) $(arg graphics_quality)"/>
+
+    </group>
+
+    <!-- Run RVIZ -->
+    <group if="$(arg enable_rviz)">
+        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find hrov_martech2023)/config/giroviz.rviz"/>
+    </group>
+</launch>

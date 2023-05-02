@@ -1,0 +1,5 @@
+<launch>
+    <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui">
+        <remap from="robot_description" to="/girona1000/robot_description"/>
+    </node>
+</launch>

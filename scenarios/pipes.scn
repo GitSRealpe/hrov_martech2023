@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<scenario>
+	<looks>
+		<look name="black" gray="0.05" roughness="0.2"/>
+		<look name="yellow" rgb="1.0 0.9 0.0" roughness="0.3"/>
+		<look name="blue" rgb="0.0 0.0 1.0" roughness="0.8"/>
+		<look name="red" rgb="1.0 0.1 0.1" roughness="0.8"/>
+		<look name="gray" gray="0.5" roughness="0.4" metalness="0.5"/>
+		<look name="duct" gray="0.1" roughness="0.4" metalness="0.5"/>
+		<look name="pipe" rgb="1.0 0.2 0.0" roughness="0.2" metalness="0.3"/>
+	</looks>
+
+	<!-- Pipe structure -->
+	<static name="Pipes" type="model">
+		<physical>
+			<mesh filename="pipe_structure/pipes_phy.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="pipe_structure/pipes.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<material name="Fiberglass"/>
+		<look name="yellow"/>
+		<world_transform rpy="0 0 1.57" xyz="$(arg position)"/>
+	</static>
+</scenario>

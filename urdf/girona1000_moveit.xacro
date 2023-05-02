@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<robot name="girona1000" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:arg name="robot_namespace" default="girona1000"/>
+
+    <!-- Load macros -->
+    <xacro:include filename="$(find cola2_lib_ros)/src/cola2_lib_ros/urdf_macros.xacro"/>
+    <!-- Load Girona1000 with payload -->
+    <xacro:include filename="$(find girona1000_description)/urdf/payload.urdf.xacro"/>
+
+    <link name="world"/>
+    <!-- Fix vehicle to world-->
+    <link name="$(arg robot_namespace)/z_joint_link"/>
+    <joint name="$(arg robot_namespace)/z_joint" type="prismatic">
+        <parent link="world"/>
+        <child link="$(arg robot_namespace)/z_joint_link"/>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+        <limit lower="-10" upper="10" effort="11000" velocity="100"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <joint name="$(arg robot_namespace)/xy_joint" type="planar">
+        <parent link="$(arg robot_namespace)/z_joint_link"/>
+        <child link="$(arg robot_namespace)/base_link"/>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+</robot>
