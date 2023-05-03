@@ -19,14 +19,34 @@ list(APPEND CATKIN_SOURCES
     tf
     tf2_ros
     laser_geometry
-    sensor_msgs
     message_filters
     filters
     interactive_markers
     visualization_msgs
-
     octomap_msgs
     octomap_ros
+
+    std_msgs
+    sensor_msgs
+    geometry_msgs
+    visualization_msgs
+    shape_msgs
+    octomap_msgs
+    trajectory_msgs
+    object_recognition_msgs
+    moveit_msgs
+    rosbag
+    urdf
+    srdfdom
+    pluginlib
+    geometric_shapes
+    moveit_core
+    moveit_ros_planning
+    tf2_ros
+    xmlrpcpp
+    robowflex_library
+    robowflex_movegroup
+    robowflex_ompl
   )
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation)
@@ -74,18 +94,18 @@ include_directories(SYSTEM ${INCLUDES})
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/hrov_martech2023_node.cpp)
-add_executable(${PROJECT_NAME}_odom2tf scripts/odom2tf.cpp)
 add_executable(${PROJECT_NAME}_laser2ptcloud scripts/laser2ptcloud.cpp)
 add_executable(${PROJECT_NAME}_octo_proc scripts/octo_proc.cpp)
+add_executable(${PROJECT_NAME}_planning scripts/planning.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
-set_target_properties(${PROJECT_NAME}_odom2tf PROPERTIES OUTPUT_NAME odom2tf PREFIX "")
 set_target_properties(${PROJECT_NAME}_laser2ptcloud PROPERTIES OUTPUT_NAME laser2ptcloud PREFIX "")
 set_target_properties(${PROJECT_NAME}_octo_proc PROPERTIES OUTPUT_NAME octo_proc PREFIX "")
+set_target_properties(${PROJECT_NAME}_planning PROPERTIES OUTPUT_NAME planning PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -96,8 +116,8 @@ set_target_properties(${PROJECT_NAME}_octo_proc PROPERTIES OUTPUT_NAME octo_proc
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(${PROJECT_NAME}_laser2ptcloud ${catkin_LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_odom2tf ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_octo_proc ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_planning ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -109,8 +129,6 @@ target_link_libraries(${PROJECT_NAME}_octo_proc ${catkin_LIBRARIES})
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/joint_traj_ctr_pub.py
-  scripts/lsrptcld.py
   scripts/clustering.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

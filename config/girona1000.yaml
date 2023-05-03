@@ -1,0 +1,6 @@
+# girona1000 robot
+
+urdf: "package://hrov_martech2023/urdf/girona1000_moveit.xacro"
+srdf: "package://girona1000_moveit/config/girona1000.srdf"
+joint_limits: "package://girona1000_moveit/config/joint_limits.yaml"
+kinematics: "package://girona1000_moveit/config/kinematics.yaml"
