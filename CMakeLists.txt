@@ -9,8 +9,15 @@ project(hrov_martech2023)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED)
 find_package(Eigen3 REQUIRED)
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+
+find_package(ompl REQUIRED)
+find_package(fcl REQUIRED)
+# message("1 ${fcl_FOUND}")
+# message("2 ${fcl_DIR}")
+# message("3 ${fcl_LIBRARY_DIRS}")
+# message("4 ${fcl_LIBRARIES}")
+# message("5 ${fcl_VERSION}")
+
 
 list(APPEND CATKIN_SOURCES
     roscpp
@@ -81,6 +88,7 @@ list(APPEND INCLUDES
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
+  ${fcl_INCLUDE_DIRS}
   )
 
 include_directories(SYSTEM ${INCLUDES})
@@ -97,6 +105,7 @@ include_directories(SYSTEM ${INCLUDES})
 add_executable(${PROJECT_NAME}_laser2ptcloud scripts/laser2ptcloud.cpp)
 add_executable(${PROJECT_NAME}_octo_proc scripts/octo_proc.cpp)
 add_executable(${PROJECT_NAME}_planning scripts/planning.cpp)
+add_executable(${PROJECT_NAME}_planning2 scripts/planning2.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -106,6 +115,7 @@ add_executable(${PROJECT_NAME}_planning scripts/planning.cpp)
 set_target_properties(${PROJECT_NAME}_laser2ptcloud PROPERTIES OUTPUT_NAME laser2ptcloud PREFIX "")
 set_target_properties(${PROJECT_NAME}_octo_proc PROPERTIES OUTPUT_NAME octo_proc PREFIX "")
 set_target_properties(${PROJECT_NAME}_planning PROPERTIES OUTPUT_NAME planning PREFIX "")
+set_target_properties(${PROJECT_NAME}_planning2 PROPERTIES OUTPUT_NAME planning2 PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -118,6 +128,7 @@ set_target_properties(${PROJECT_NAME}_planning PROPERTIES OUTPUT_NAME planning P
 target_link_libraries(${PROJECT_NAME}_laser2ptcloud ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_octo_proc ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_planning ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_planning2 ${catkin_LIBRARIES})
 
 #############
 ## Install ##
