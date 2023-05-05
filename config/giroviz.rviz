@@ -3,11 +3,7 @@ Panels:
     Help Height: 78
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /TF1/Frames1
-        - /MarkerArray1
-        - /Marker1
-        - /InteractiveMarkers1
+      Expanded: ~
       Splitter Ratio: 0.7382352948188782
     Tree Height: 473
   - Class: rviz/Selection
@@ -133,18 +129,18 @@ Visualization Manager:
       Visual Enabled: true
     - Alpha: 1
       Class: rviz/Axes
-      Enabled: true
+      Enabled: false
       Length: 0.30000001192092896
       Name: base_link
       Radius: 0.05000000074505806
       Reference Frame: girona1000/base_link
       Show Trail: false
-      Value: true
+      Value: false
     - Alpha: 1
       Class: rviz/Axes
       Enabled: false
       Length: 0.30000001192092896
-      Name: ned_world
+      Name: world_ned
       Radius: 0.019999999552965164
       Reference Frame: world_ned
       Show Trail: false
@@ -187,7 +183,7 @@ Visualization Manager:
         girona1000/base:
           Value: false
         girona1000/base_link:
-          Value: false
+          Value: true
         girona1000/dvl:
           Value: false
         girona1000/dvl_altitude:
@@ -203,7 +199,7 @@ Visualization Manager:
         girona1000/modem:
           Value: false
         girona1000/multibeam:
-          Value: true
+          Value: false
         girona1000/pressure:
           Value: false
         girona1000/thruster_0:
@@ -272,7 +268,7 @@ Visualization Manager:
       Value: true
       Voxel Alpha: 1
       Voxel Coloring: Cell Probability
-      Voxel Rendering: All Voxels
+      Voxel Rendering: Occupied Voxels
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -318,7 +314,7 @@ Visualization Manager:
       Marker Topic: /kcentroids
       Name: MarkerArray
       Namespaces:
-        centroids: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -326,7 +322,7 @@ Visualization Manager:
       Marker Topic: /frontiers
       Name: Marker
       Namespaces:
-        cubos: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/InteractiveMarkers
@@ -366,7 +362,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.7826433181762695
+      Distance: 6.650820255279541
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -374,17 +370,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 2.269460678100586
-        Y: -0.5687398314476013
-        Z: -1.2336167097091675
+        X: -0.06602436304092407
+        Y: 2.2697291374206543
+        Z: -2.10022234916687
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5797992944717407
+      Pitch: 0.714798629283905
       Target Frame: <Fixed Frame>
-      Yaw: 1.9667768478393555
+      Yaw: 3.7167789936065674
     Saved: ~
 Window Geometry:
   Displays:

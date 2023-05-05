@@ -8,7 +8,14 @@
     <xacro:include filename="$(find girona1000_description)/urdf/payload.urdf.xacro"/>
 
     <link name="world"/>
-    <!-- Fix vehicle to world-->
+    <!-- <link name="world_ned"/>
+    <joint name="to_ned" type="fixed">
+        <parent link="world"/>
+        <child link="world_ned"/>
+        <origin rpy="1.57 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </joint> -->
+
+    <!-- Fix vehicle to world_ned-->
     <link name="$(arg robot_namespace)/z_joint_link"/>
     <joint name="$(arg robot_namespace)/z_joint" type="prismatic">
         <parent link="world"/>
