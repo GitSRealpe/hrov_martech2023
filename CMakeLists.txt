@@ -54,6 +54,8 @@ list(APPEND CATKIN_SOURCES
     robowflex_library
     robowflex_movegroup
     robowflex_ompl
+    rviz_visual_tools
+
   )
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation)
@@ -61,6 +63,11 @@ find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation)
 add_message_files(
   FILES
   PointArray.msg
+)
+
+add_service_files(
+  FILES
+  PlanGoal.srv
 )
 
 generate_messages(
