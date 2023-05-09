@@ -30,27 +30,35 @@ void getUnks(std::shared_ptr<octomap::OcTree> tree)
 
     // for publishing to the clustering algorithm
     hrov_martech2023::PointArray pt_array;
-
+    octomap::OcTreeNode *dummyNode;
+    std::vector<octomap::OcTreeNode *> candidatos;
     for (octomap::OcTree::leaf_iterator n = tree->begin_leafs(DEPTH), end = tree->end_leafs(); n != end; ++n)
     {
-        if (!tree->isNodeOccupied(*n))
+        if (tree->isNodeOccupied(*n))
         {
             for (octomap::point3d elem : dir_vec)
             {
                 octomap::point3d pt = n.getCoordinate() + elem;
-                if (tree->search(pt, DEPTH) == NULL)
+                dummyNode = tree->search(pt, DEPTH);
+                if (dummyNode != NULL && !tree->isNodeOccupied(dummyNode))
                 {
-                    std::cout << "Node center: " << n.getCoordinate() << "\n";
-                    std::cout << "al lado en x Unknown\n";
+                    for (octomap::point3d elem2 : dir_vec)
+                    {
+                        octomap::point3d pt2 = pt + elem2;
+                        if (tree->search(pt2, DEPTH) == NULL)
+                        {
+                            std::cout << "Node center: " << pt2 << "\n";
+                            std::cout << "al lado en x Unknown\n";
+                            geometry_msgs::Point pt_msgs;
+                            pt_msgs.x = pt2.x();
+                            pt_msgs.y = pt2.y();
+                            pt_msgs.z = pt2.z();
+                            pt_array.puntos.push_back(pt_msgs);
+                            marker.points.push_back(pt_msgs);
 
-                    geometry_msgs::Point pt_msgs;
-                    pt_msgs.x = pt.x();
-                    pt_msgs.y = pt.y();
-                    pt_msgs.z = pt.z();
-                    pt_array.puntos.push_back(pt_msgs);
-                    marker.points.push_back(pt_msgs);
-
-                    std::cout << "-------------\n";
+                            std::cout << "-------------\n";
+                        }
+                    }
                 }
             }
         }
@@ -120,7 +128,6 @@ int main(int argc, char **argv)
 
     while (ros::ok())
     {
-
         ros::spinOnce();
         ros::Duration(1).sleep();
         // ros::spin();
