@@ -166,6 +166,9 @@ public:
         goal[3] = req.yaw;
         std::cout << "requesting solution to:\n\n";
         pdef_->setStartAndGoalStates(current, goal);
+        // genreal form of setting a goal
+        // pdef_->setGoal()
+        pdef_->fixInvalidInputStates(0, 2, 100);
         pdef_->print();
 
         // attempt to solve the problem
@@ -200,7 +203,7 @@ public:
         }
         else
         {
-            std::cout << "Solution not found:\n";
+            std::cout << "Solution not found\n";
             res.success = false;
         }
 
