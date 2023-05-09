@@ -1,9 +1,9 @@
 <launch>
 
-    <!-- <node name="sensortf" pkg="tf" type="static_transform_publisher" args="0.539 0 0.75 1.57 0 0 girona1000/base_link girona1000/laser_link 100"/> -->
+    <node name="sensortf" pkg="tf" type="static_transform_publisher" args="0.539 0 0.75 1.57 0 1.309 girona1000/base_link girona1000/laser_link 100"/>
 
-    <node name="sensortf" pkg="tf" type="static_transform_publisher" args="0.60 0 0.90 1.57 0 1.57 girona1000/base_link girona1000/laser_link 100"/>
-    <!-- <node name="sensortf" pkg="tf" type="static_transform_publisher" args="0.60 0 0.90 0 0 0 girona1000/base_link girona1000/laser_link 100"/> -->
+    <!-- <node name="sensortf" pkg="tf" type="static_transform_publisher" args="0.60 0 0.90 1.57 0 1.57 girona1000/base_link girona1000/laser_link 100"/> -->
+    <!-- <node name="sensortf" pkg="tf" type="static_transform_publisher" args="0.60 0 0.90 1.57 0 1.57 girona1000/base_link girona1000/laser_link 100"/> -->
 
     <!-- <node pkg="hrov_martech2023" type="laser2ptcloud" name="laser2ptcloud" output="screen">
         <param name="laser_topic" value="girona1000/profiler"/>
@@ -29,6 +29,7 @@
                 leaf_size: 0.02
             </rosparam>
     </node>
+
 
     <!-- <group ns="dummy"> -->
     <param name="~frame_id" type="string" value="world"/>
