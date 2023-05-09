@@ -73,19 +73,11 @@ private:
     std::shared_ptr<fcl::CollisionObjectf> tree_obj_;
 };
 
-bool sendWaypoints(hrov_martech2023::PlanGoal::Request &req, hrov_martech2023::PlanGoal::Response &res)
-{
-    ROS_INFO_STREAM("Sending los waypoints " << 3);
-    return true;
-}
-
 int main(int argc, char **argv)
 {
     std::cout << "yeah planning\n";
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
-
-    ros::ServiceServer service = nh.advertiseService("getWaypoints", sendWaypoints);
 
     octomap_msgs::OctomapConstPtr mapa_msg = ros::topic::waitForMessage<octomap_msgs::Octomap>("/octomap_binary");
     octomap::AbstractOcTree *abs_tree = octomap_msgs::msgToMap(*mapa_msg);
@@ -217,6 +209,10 @@ int main(int argc, char **argv)
     {
         std::cout << "No solution found" << std::endl;
     }
+
+    ros::Duration(2).sleep();
+    // planner->clear();
+    // pdef->clearSolutionPaths();
 
     return 0;
 }

@@ -83,7 +83,7 @@ catkin_package(
   INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include
   )
 
-###########
+###########s
 ## Build ##
 ###########
 
@@ -111,7 +111,7 @@ include_directories(SYSTEM ${INCLUDES})
 # add_executable(${PROJECT_NAME}_node src/hrov_martech2023_node.cpp)
 add_executable(${PROJECT_NAME}_laser2ptcloud scripts/laser2ptcloud.cpp)
 add_executable(${PROJECT_NAME}_octo_proc scripts/octo_proc.cpp)
-add_executable(${PROJECT_NAME}_planning scripts/planning.cpp)
+add_executable(${PROJECT_NAME}_planning2_srv scripts/planning2_srv.cpp)
 add_executable(${PROJECT_NAME}_planning2 scripts/planning2.cpp)
 
 ## Rename C++ executable without prefix
@@ -121,7 +121,7 @@ add_executable(${PROJECT_NAME}_planning2 scripts/planning2.cpp)
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 set_target_properties(${PROJECT_NAME}_laser2ptcloud PROPERTIES OUTPUT_NAME laser2ptcloud PREFIX "")
 set_target_properties(${PROJECT_NAME}_octo_proc PROPERTIES OUTPUT_NAME octo_proc PREFIX "")
-set_target_properties(${PROJECT_NAME}_planning PROPERTIES OUTPUT_NAME planning PREFIX "")
+set_target_properties(${PROJECT_NAME}_planning2_srv PROPERTIES OUTPUT_NAME planning2_srv PREFIX "")
 set_target_properties(${PROJECT_NAME}_planning2 PROPERTIES OUTPUT_NAME planning2 PREFIX "")
 
 ## Add cmake target dependencies of the executable
@@ -134,7 +134,7 @@ set_target_properties(${PROJECT_NAME}_planning2 PROPERTIES OUTPUT_NAME planning2
 # )
 target_link_libraries(${PROJECT_NAME}_laser2ptcloud ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_octo_proc ${catkin_LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_planning ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_planning2_srv ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_planning2 ${catkin_LIBRARIES})
 
 #############
