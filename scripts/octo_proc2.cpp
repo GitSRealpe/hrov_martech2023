@@ -34,17 +34,20 @@ void getUnks(std::shared_ptr<octomap::OcTree> tree)
     std::vector<octomap::OcTreeNode *> candidatos;
     for (octomap::OcTree::leaf_iterator n = tree->begin_leafs(DEPTH), end = tree->end_leafs(); n != end; ++n)
     {
+        // occupied nodes
         if (tree->isNodeOccupied(*n))
         {
             for (octomap::point3d elem : dir_vec)
             {
                 octomap::point3d pt = n.getCoordinate() + elem;
                 dummyNode = tree->search(pt, DEPTH);
+                // free nodes
                 if (dummyNode != NULL && !tree->isNodeOccupied(dummyNode))
                 {
                     for (octomap::point3d elem2 : dir_vec)
                     {
                         octomap::point3d pt2 = pt + elem2;
+                        // unknown nodes
                         if (tree->search(pt2, DEPTH) == NULL)
                         {
                             std::cout << "Node center: " << pt2 << "\n";
