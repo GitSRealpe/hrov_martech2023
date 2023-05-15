@@ -109,8 +109,9 @@ include_directories(SYSTEM ${INCLUDES})
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/hrov_martech2023_node.cpp)
-add_executable(${PROJECT_NAME}_laser2ptcloud scripts/laser2ptcloud.cpp)
-add_executable(${PROJECT_NAME}_octo_proc scripts/octo_proc.cpp)
+add_executable(${PROJECT_NAME}_laser2ptcloud scripts/utils/laser2ptcloud.cpp)
+add_executable(${PROJECT_NAME}_octo_proc1 scripts/octo_proc1.cpp)
+add_executable(${PROJECT_NAME}_octo_proc2 scripts/octo_proc2.cpp)
 add_executable(${PROJECT_NAME}_planning2_srv scripts/planning2_srv.cpp)
 add_executable(${PROJECT_NAME}_planning2 scripts/planning2.cpp)
 
@@ -120,7 +121,8 @@ add_executable(${PROJECT_NAME}_planning2 scripts/planning2.cpp)
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 set_target_properties(${PROJECT_NAME}_laser2ptcloud PROPERTIES OUTPUT_NAME laser2ptcloud PREFIX "")
-set_target_properties(${PROJECT_NAME}_octo_proc PROPERTIES OUTPUT_NAME octo_proc PREFIX "")
+set_target_properties(${PROJECT_NAME}_octo_proc1 PROPERTIES OUTPUT_NAME octo_proc1 PREFIX "")
+set_target_properties(${PROJECT_NAME}_octo_proc2 PROPERTIES OUTPUT_NAME octo_proc2 PREFIX "")
 set_target_properties(${PROJECT_NAME}_planning2_srv PROPERTIES OUTPUT_NAME planning2_srv PREFIX "")
 set_target_properties(${PROJECT_NAME}_planning2 PROPERTIES OUTPUT_NAME planning2 PREFIX "")
 
@@ -133,7 +135,8 @@ set_target_properties(${PROJECT_NAME}_planning2 PROPERTIES OUTPUT_NAME planning2
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(${PROJECT_NAME}_laser2ptcloud ${catkin_LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_octo_proc ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_octo_proc1 ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_octo_proc2 ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_planning2_srv ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_planning2 ${catkin_LIBRARIES})
 
@@ -148,5 +151,6 @@ target_link_libraries(${PROJECT_NAME}_planning2 ${catkin_LIBRARIES})
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   scripts/clustering.py
+  scripts/clustering_plot.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
