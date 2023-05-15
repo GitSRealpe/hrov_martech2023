@@ -58,24 +58,29 @@ def makeMenuMarker(name, pos):
     control.markers.append(marker)
     int_marker.controls.append(control)
 
-    server.insert(int_marker)
+    server.insert(int_marker, markerCB)
 
 
-def deepCb(feedback: InteractiveMarkerFeedback):
-    rospy.loginfo("The deep sub-menu has been found.")
-    rospy.loginfo(feedback.marker_name)
-    rospy.loginfo(feedback.menu_entry_id)
-    print(feedback.pose)
-    im = server.get(feedback.marker_name)
-    im.controls[0].markers[0].color.b = 1
-    server.insert(im)
-    server.applyChanges()
+def markerCB(feedback: InteractiveMarkerFeedback):
+    print("left click clicked\n")
+
+
+def menuCB(feedback: InteractiveMarkerFeedback):
+    if feedback.event_type == feedback.BUTTON_CLICK:
+        rospy.loginfo("The deep sub-menu has been found.")
+        rospy.loginfo(feedback.marker_name)
+        rospy.loginfo(feedback.menu_entry_id)
+        print(feedback.pose)
+        im = server.get(feedback.marker_name)
+        im.controls[0].markers[0].color.b = 1
+        server.insert(im)
+        server.applyChanges()
 
 
 def initMenu():
     global h_first_entry, h_mode_last
-    h_first_entry = menu_handler.insert("Select as goal", callback=deepCb)
-    h_first_entry = menu_handler.insert("Request Path", callback=deepCb)
+    h_first_entry = menu_handler.insert("Select as goal", callback=menuCB)
+    h_first_entry = menu_handler.insert("Request Path", callback=menuCB)
 
 
 server = InteractiveMarkerServer("menu")
@@ -127,22 +132,6 @@ print("\nDibujando los esferoides\n")
 
 for idx, (mean, covar) in enumerate(zip(dpgmm.means_, dpgmm.covariances_)):
     print(idx)
-    # val, vec = np.linalg.eig(covar)
-    # marker.header.stamp = rospy.Time.now()
-    # marker.id = idx
-    # marker.pose.position.x = mean[0]
-    # marker.pose.position.y = mean[1]
-    # marker.pose.position.z = mean[2]
-    # marker.scale.x = 0.5
-    # marker.scale.y = 0.5
-    # marker.scale.z = 0.5
-
-    # marker.pose.orientation.x = 0
-    # marker.pose.orientation.y = 0
-    # marker.pose.orientation.z = 0
-    # marker.pose.orientation.w = 1
-
-    # marker_array.markers.append(copy.deepcopy(marker))
 
     makeMenuMarker("marker" + str(idx), mean)
     menu_handler.apply(server, "marker" + str(idx))
