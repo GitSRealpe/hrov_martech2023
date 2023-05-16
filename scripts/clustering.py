@@ -5,6 +5,7 @@ from sklearn.cluster import KMeans
 from sklearn import mixture
 
 from hrov_martech2023.msg import PointArray
+from hrov_martech2023.srv import PlanGoal, PlanGoalRequest
 from visualization_msgs.msg import (
     Marker,
     MarkerArray,
@@ -16,13 +17,9 @@ from interactive_markers.menu_handler import *
 
 from geometry_msgs.msg import Pose
 
-import tf.transformations as tr
-import spatialmath as sm
-import spatialmath.base as smb
-
-import plotly.graph_objects as go
-
 rospy.init_node("clustering_node", anonymous=True)
+
+reqPath = rospy.ServiceProxy("getPath", PlanGoal)
 
 ######################################
 server = None
@@ -66,15 +63,20 @@ def markerCB(feedback: InteractiveMarkerFeedback):
 
 
 def menuCB(feedback: InteractiveMarkerFeedback):
-    if feedback.event_type == feedback.BUTTON_CLICK:
-        rospy.loginfo("The deep sub-menu has been found.")
-        rospy.loginfo(feedback.marker_name)
-        rospy.loginfo(feedback.menu_entry_id)
-        print(feedback.pose)
-        im = server.get(feedback.marker_name)
-        im.controls[0].markers[0].color.b = 1
-        server.insert(im)
-        server.applyChanges()
+    # if feedback.event_type == feedback.MENU_SELECT:
+    rospy.loginfo("Clicked menu.")
+    rospy.loginfo(feedback.marker_name)
+    rospy.loginfo(feedback.menu_entry_id)
+    print(feedback.pose)
+    # im = server.get(feedback.marker_name)
+    # im.controls[0].markers[0].color.b = 1
+    # server.insert(im)
+    # server.applyChanges()
+    req = PlanGoalRequest()
+    req.position = feedback.pose.position
+    req.yaw = 0
+    res = reqPath(req)
+    print(res)
 
 
 def initMenu():
