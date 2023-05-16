@@ -6,7 +6,8 @@
     <arg name="enable_gui" default="true"/>
 
     <!-- Config folder -->
-    <arg name="config_folder" value="$(find cola2_girona1000)/sim_config"/>
+    <!-- <arg name="config_folder" value="$(find cola2_girona1000)/sim_config"/> -->
+    <arg name="config_folder" value="$(find hrov_martech2023)/config/cola2config"/>
 
     <!-- Common configs -->
     <rosparam command="load" ns="captain" file="$(arg config_folder)/captain.yaml"/>
