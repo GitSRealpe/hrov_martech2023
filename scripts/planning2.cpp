@@ -37,7 +37,7 @@ public:
     Validator(const ob::SpaceInformationPtr &si, std::shared_ptr<fcl::CollisionObjectf> tree) : ob::StateValidityChecker(si) //, tree_obj_(tree)
     {
         std::cout << "validator initializing\n";
-        auv_box_ = std::shared_ptr<fcl::Boxf>(new fcl::Boxf(2, 2, 2));
+        auv_box_ = std::shared_ptr<fcl::Boxf>(new fcl::Boxf(1.5, 1, 1));
         auv_co_.reset(new fcl::CollisionObjectf(auv_box_));
         tree_obj_ = tree;
     }
