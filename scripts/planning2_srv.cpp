@@ -11,7 +11,9 @@
 // #include <tf/transform_listener.h>
 #include <rviz_visual_tools/rviz_visual_tools.h>
 
+// package stuff
 #include <hrov_martech2023/PlanGoal.h>
+#include <hrov_martech2023/PointArray.h>
 
 // OMPL STUFF
 #include <ompl/base/SpaceInformation.h>
@@ -43,7 +45,7 @@ public:
     Validator(const ob::SpaceInformationPtr &si, std::shared_ptr<fcl::CollisionObjectf> tree) : ob::StateValidityChecker(si) //, tree_obj_(tree)
     {
         std::cout << "validator initializing\n";
-        auv_box_ = std::shared_ptr<fcl::Boxf>(new fcl::Boxf(2, 2, 2));
+        auv_box_ = std::shared_ptr<fcl::Boxf>(new fcl::Boxf(1.8, 1.2, 1.3));
         auv_co_.reset(new fcl::CollisionObjectf(auv_box_));
         tree_obj_ = tree;
     }
@@ -76,6 +78,9 @@ public:
 class Planeador
 {
 private:
+    ros::NodeHandle nh_;
+    ros::Publisher pathPub;
+
     ob::StateSpacePtr navSpace_;
     ompl::base::ProblemDefinitionPtr pdef_;
     std::shared_ptr<ompl::geometric::RRTConnect> planner_;
@@ -85,10 +90,12 @@ private:
     std::vector<rviz_visual_tools::colors> colorlist_;
 
 public:
-    Planeador(std::shared_ptr<fcl::CollisionObjectf> tree)
+    Planeador(ros::NodeHandle nh, std::shared_ptr<fcl::CollisionObjectf> tree) : nh_(nh)
     {
 
         std::cout << "creando planer\n";
+        std::cout << nh_.getNamespace() << "\n";
+        pathPub = nh_.advertise<hrov_martech2023::PointArray>("planner/path_result", 1, true);
         auto r3(std::make_shared<ob::RealVectorStateSpace>(3));
         r3->setName("Position");
         ob::RealVectorBounds bounds(3);
@@ -172,18 +179,20 @@ public:
         pdef_->print();
 
         // attempt to solve the problem
-        if (planner_->ob::Planner::solve(1))
+        if (planner_->ob::Planner::solve(5))
         {
             std::cout << "Found solution:\n";
 
-            og::PathGeometric pathr = *pdef_->getSolutionPath()->as<og::PathGeometric>();
-            std::cout << pathr.getStateCount() << "\n";
+            og::PathGeometric pathres = *pdef_->getSolutionPath()->as<og::PathGeometric>();
+            std::cout << pathres.getStateCount() << "\n";
 
             EigenSTL::vector_Vector3d puntos;
             Eigen::Isometry3d punto;
+            hrov_martech2023::PointArray path;
+            geometry_msgs::Point point;
             std::vector<rviz_visual_tools::colors> colors;
             int i = 0;
-            for (auto stt : pathr.getStates())
+            for (auto stt : pathres.getStates())
             {
                 ob::ScopedState<ob::CompoundStateSpace> sstt(navSpace_, stt);
                 punto = Eigen::AngleAxisd(sstt.reals().at(3), Eigen::Vector3d::UnitZ());
@@ -193,8 +202,14 @@ public:
                 puntos.push_back(punto.translation());
                 colors.push_back(colorlist_.at(i++ % colorlist_.size()));
                 visual_tools_->publishArrow(punto, rviz_visual_tools::RED, rviz_visual_tools::LARGE);
+
+                point.x = sstt.reals().at(0);
+                point.y = sstt.reals().at(1);
+                point.z = sstt.reals().at(2);
+                path.puntos.push_back(point);
             }
 
+            pathPub.publish(path);
             visual_tools_->publishPath(puntos, colors, 0.05);
             // Don't forget to trigger the publisher!
             visual_tools_->trigger();
@@ -226,7 +241,7 @@ int main(int argc, char **argv)
     std::shared_ptr<fcl::CollisionGeometryf> geo(tree);
     std::shared_ptr<fcl::CollisionObjectf> tree_obj(new fcl::CollisionObjectf(geo));
 
-    Planeador plnr(tree_obj);
+    Planeador plnr(nh, tree_obj);
     ros::ServiceServer service = nh.advertiseService("getPath", &Planeador::doPlan, &plnr);
 
     while (ros::ok())
