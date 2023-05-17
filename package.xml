@@ -44,6 +44,7 @@
   <depend>object_recognition_msgs</depend>
   <depend>moveit_msgs</depend>
   <depend>nav_msgs</depend>
+  <depend>cola2_msgs</depend>
 
   <depend>rosbag</depend>
   <depend>urdf</depend>

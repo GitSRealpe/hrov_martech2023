@@ -32,6 +32,7 @@ list(APPEND CATKIN_SOURCES
     visualization_msgs
     octomap_msgs
     octomap_ros
+    cola2_msgs
 
     std_msgs
     sensor_msgs
@@ -112,8 +113,13 @@ include_directories(SYSTEM ${INCLUDES})
 add_executable(${PROJECT_NAME}_laser2ptcloud scripts/utils/laser2ptcloud.cpp)
 add_executable(${PROJECT_NAME}_octo_proc1 scripts/octo_proc1.cpp)
 add_executable(${PROJECT_NAME}_octo_proc2 scripts/octo_proc2.cpp)
-add_executable(${PROJECT_NAME}_planning2_srv scripts/planning2_srv.cpp)
 add_executable(${PROJECT_NAME}_planning2 scripts/planning2.cpp)
+add_executable(${PROJECT_NAME}_planning2_srv scripts/planning2_srv.cpp)
+add_executable(${PROJECT_NAME}_planning2dubs scripts/planning2dubs.cpp)
+add_executable(${PROJECT_NAME}_planning2dubs_srv scripts/planning2dubs_srv.cpp)
+add_executable(${PROJECT_NAME}_planning2dubs_bench scripts/planning2dubs_bench.cpp)
+
+add_executable(${PROJECT_NAME}_path_exec scripts/utils/path_exec.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -123,8 +129,13 @@ add_executable(${PROJECT_NAME}_planning2 scripts/planning2.cpp)
 set_target_properties(${PROJECT_NAME}_laser2ptcloud PROPERTIES OUTPUT_NAME laser2ptcloud PREFIX "")
 set_target_properties(${PROJECT_NAME}_octo_proc1 PROPERTIES OUTPUT_NAME octo_proc1 PREFIX "")
 set_target_properties(${PROJECT_NAME}_octo_proc2 PROPERTIES OUTPUT_NAME octo_proc2 PREFIX "")
-set_target_properties(${PROJECT_NAME}_planning2_srv PROPERTIES OUTPUT_NAME planning2_srv PREFIX "")
 set_target_properties(${PROJECT_NAME}_planning2 PROPERTIES OUTPUT_NAME planning2 PREFIX "")
+set_target_properties(${PROJECT_NAME}_planning2_srv PROPERTIES OUTPUT_NAME planning2_srv PREFIX "")
+set_target_properties(${PROJECT_NAME}_planning2dubs PROPERTIES OUTPUT_NAME planning2dubs PREFIX "")
+set_target_properties(${PROJECT_NAME}_planning2dubs_srv PROPERTIES OUTPUT_NAME planning2dubs_srv PREFIX "")
+set_target_properties(${PROJECT_NAME}_planning2dubs_bench PROPERTIES OUTPUT_NAME planning2dubs_bench PREFIX "")
+
+set_target_properties(${PROJECT_NAME}_path_exec PROPERTIES OUTPUT_NAME path_exec PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -137,8 +148,13 @@ set_target_properties(${PROJECT_NAME}_planning2 PROPERTIES OUTPUT_NAME planning2
 target_link_libraries(${PROJECT_NAME}_laser2ptcloud ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_octo_proc1 ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_octo_proc2 ${catkin_LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_planning2_srv ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_planning2 ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_planning2_srv ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_planning2dubs ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_planning2dubs_srv ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_planning2dubs_bench ${catkin_LIBRARIES})
+
+target_link_libraries(${PROJECT_NAME}_path_exec ${catkin_LIBRARIES})
 
 #############
 ## Install ##
