@@ -31,7 +31,7 @@ h_mode_last = 0
 
 def makeMenuMarker(name, pos):
     int_marker = InteractiveMarker()
-    int_marker.header.frame_id = "world"
+    int_marker.header.frame_id = "world_ned"
     int_marker.pose.position.x = pos[0]
     int_marker.pose.position.y = pos[1]
     int_marker.pose.position.z = pos[2]
@@ -75,8 +75,9 @@ def menuCB(feedback: InteractiveMarkerFeedback):
     req = PlanGoalRequest()
     req.position = feedback.pose.position
     req.yaw = 0
-    res = reqPath(req)
-    print(res)
+    reqPath(req)
+    # res = reqPath(req)
+    # print(res)
 
 
 def initMenu():
@@ -118,7 +119,7 @@ dpgmm.covariances_ = np.delete(dpgmm.covariances_, index, axis=0)
 
 marker_array = MarkerArray()
 marker = Marker()
-marker.header.frame_id = "world"
+marker.header.frame_id = "world_ned"
 marker.ns = "centroids"
 marker.type = Marker.SPHERE
 marker.action = Marker.ADD

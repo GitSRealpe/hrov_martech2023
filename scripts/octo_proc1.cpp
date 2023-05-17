@@ -90,7 +90,7 @@ int main(int argc, char **argv)
     dist = tree->getResolution() * pow(2, 16 - DEPTH);
 
     // crear el marker
-    marker.header.frame_id = "world";
+    marker.header.frame_id = "world_ned";
     marker.ns = "cubos";
     marker.type = visualization_msgs::Marker::CUBE_LIST;
     marker.action = visualization_msgs::Marker::ADD;
