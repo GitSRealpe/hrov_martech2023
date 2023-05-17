@@ -7,8 +7,6 @@
     <arg name="enable_gui" default="true"/>
     <arg name="enable_rviz" default="true"/>
 
-    <!-- perfect girona -->
-    <!-- <include file="$(find hrov_martech2023)/launch/utils/fake_girona1000.launch"/> -->
     <include file="$(find hrov_martech2023)/launch/utils/octomap.launch"/>
 
     <!-- Static transform -->

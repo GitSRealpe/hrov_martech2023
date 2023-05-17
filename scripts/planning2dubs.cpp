@@ -90,7 +90,7 @@ int main(int argc, char **argv)
     std::shared_ptr<fcl::CollisionGeometryf> geo(tree);
     std::shared_ptr<fcl::CollisionObjectf> tree_obj(new fcl::CollisionObjectf(geo));
 
-    auto dubss(std::make_shared<ob::DubinsStateSpace>(0.2));
+    auto dubss(std::make_shared<ob::DubinsStateSpace>(0.5));
     dubss->setName("Dubins");
     ob::RealVectorBounds bounds(2);
     bounds.setLow(-10);
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
     // perform setup steps for the planner
     // planner->setIntermediateStates(false);
     auto planner(std::make_shared<og::RRT>(si));
-    planner->setRange(0.7);
+    planner->setRange(0.5);
     planner->setup();
 
     // set the problem we are trying to solve for the planner
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
 
         // path->print(std::cout);
         og::PathGeometric pathr = *pdef->getSolutionPath()->as<og::PathGeometric>();
-        pathr.interpolate(100);
+        pathr.interpolate(20);
         pathr.printAsMatrix(std::cout);
         std::cout << pathr.getStateCount() << "\n";
 
