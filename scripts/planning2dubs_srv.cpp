@@ -10,6 +10,7 @@
 #include <tf2_eigen/tf2_eigen.h>
 // #include <tf/transform_listener.h>
 #include <rviz_visual_tools/rviz_visual_tools.h>
+#include <nav_msgs/Path.h>
 
 // package stuff
 #include <hrov_martech2023/PlanGoal.h>
@@ -101,7 +102,7 @@ public:
     {
         std::cout << "creando planer\n";
         std::cout << nh_.getNamespace() << "\n";
-        pathPub = nh_.advertise<hrov_martech2023::PointArray>("planner/path_result", 1, true);
+        pathPub = nh_.advertise<nav_msgs::Path>("planner/path_result", 1, true);
 
         auto dubss(std::make_shared<ob::DubinsStateSpace>(0.5));
         dubss->setName("Dubins");
@@ -112,8 +113,8 @@ public:
         auto zss(std::make_shared<ob::RealVectorStateSpace>(1));
         zss->setName("Z");
         ob::RealVectorBounds bounds2(1);
-        bounds2.setHigh(0.5);
-        bounds2.setLow(-5);
+        bounds2.setLow(0.5);
+        bounds2.setHigh(5);
         zss->setBounds(bounds2);
         navSpace_ = dubss + zss;
         navSpace_->setName("navSpace");
@@ -138,7 +139,7 @@ public:
         // planner_->setIntermediateStates(false);
         planner_->printSettings(std::cout);
 
-        visual_tools_.reset(new rviz_visual_tools::RvizVisualTools("world", "/rviz_visual_markers"));
+        visual_tools_.reset(new rviz_visual_tools::RvizVisualTools("world_ned", "/rviz_visual_markers"));
         colorlist_ = {rviz_visual_tools::WHITE, rviz_visual_tools::BLUE};
 
         std::cout << "fin del constructor\n";
@@ -157,7 +158,7 @@ public:
         {
             try
             {
-                t = tfBuffer.lookupTransform("world", "girona1000/base_link", ros::Time(0));
+                t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
                 break;
             }
             catch (tf2::TransformException &ex)
@@ -201,8 +202,10 @@ public:
 
             EigenSTL::vector_Vector3d puntos;
             Eigen::Isometry3d punto;
-            hrov_martech2023::PointArray path;
-            geometry_msgs::Point point;
+            // hrov_martech2023::PointArray path;
+            // geometry_msgs::Point point;
+            nav_msgs::Path path;
+            geometry_msgs::PoseStamped posestmp;
             std::vector<rviz_visual_tools::colors> colors;
             int i = 0;
             for (auto stt : pathres.getStates())
@@ -216,10 +219,12 @@ public:
                 colors.push_back(colorlist_.at(i++ % colorlist_.size()));
                 visual_tools_->publishArrow(punto, rviz_visual_tools::RED, rviz_visual_tools::LARGE);
 
-                point.x = sstt.reals().at(0);
-                point.y = sstt.reals().at(1);
-                point.z = sstt.reals().at(3);
-                path.puntos.push_back(point);
+                posestmp.pose.position.x = sstt.reals().at(0);
+                posestmp.pose.position.y = sstt.reals().at(1);
+                posestmp.pose.position.z = sstt.reals().at(3);
+                Eigen::Quaterniond q(Eigen::AngleAxisd(sstt.reals().at(2), Eigen::Vector3d::UnitZ()));
+                posestmp.pose.orientation = tf2::toMsg(q);
+                path.poses.push_back(posestmp);
             }
 
             pathPub.publish(path);

@@ -6,6 +6,7 @@
 #include <octomap/OcTree.h>
 #include <octomap_msgs/conversions.h>
 #include <geometry_msgs/Pose.h>
+#include <nav_msgs/Path.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_eigen/tf2_eigen.h>
 // #include <tf/transform_listener.h>
@@ -95,7 +96,8 @@ public:
 
         std::cout << "creando planer\n";
         std::cout << nh_.getNamespace() << "\n";
-        pathPub = nh_.advertise<hrov_martech2023::PointArray>("planner/path_result", 1, true);
+        // pathPub = nh_.advertise<hrov_martech2023::PointArray>("planner/path_result", 1, true);
+        pathPub = nh_.advertise<nav_msgs::Path>("planner/path_result", 1, true);
         auto r3(std::make_shared<ob::RealVectorStateSpace>(3));
         r3->setName("Position");
         ob::RealVectorBounds bounds(3);
@@ -103,8 +105,10 @@ public:
         bounds.setHigh(0, 10);
         bounds.setLow(1, -10);
         bounds.setHigh(1, 10);
-        bounds.setLow(2, -5);
-        bounds.setHigh(2, -0.2);
+        // bounds.setLow(2, -5);
+        // bounds.setHigh(2, -0.5);
+        bounds.setLow(2, 0.5);
+        bounds.setHigh(2, 5);
         r3->setBounds(bounds);
         auto so2(std::make_shared<ob::SO2StateSpace>());
         so2->setName("Yaw");
@@ -129,7 +133,7 @@ public:
         // planner_->setIntermediateStates(false);
         planner_->printSettings(std::cout);
 
-        visual_tools_.reset(new rviz_visual_tools::RvizVisualTools("world", "/rviz_visual_markers"));
+        visual_tools_.reset(new rviz_visual_tools::RvizVisualTools("world_ned", "/rviz_visual_markers"));
         colorlist_ = {rviz_visual_tools::WHITE, rviz_visual_tools::BLUE};
 
         std::cout << "fin del constructor\n";
@@ -148,7 +152,7 @@ public:
         {
             try
             {
-                t = tfBuffer.lookupTransform("world", "girona1000/base_link", ros::Time(0));
+                t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
                 break;
             }
             catch (tf2::TransformException &ex)
@@ -188,8 +192,9 @@ public:
 
             EigenSTL::vector_Vector3d puntos;
             Eigen::Isometry3d punto;
-            hrov_martech2023::PointArray path;
-            geometry_msgs::Point point;
+            // hrov_martech2023::PointArray path;
+            nav_msgs::Path path;
+            geometry_msgs::PoseStamped posestmp;
             std::vector<rviz_visual_tools::colors> colors;
             int i = 0;
             for (auto stt : pathres.getStates())
@@ -203,10 +208,12 @@ public:
                 colors.push_back(colorlist_.at(i++ % colorlist_.size()));
                 visual_tools_->publishArrow(punto, rviz_visual_tools::RED, rviz_visual_tools::LARGE);
 
-                point.x = sstt.reals().at(0);
-                point.y = sstt.reals().at(1);
-                point.z = sstt.reals().at(2);
-                path.puntos.push_back(point);
+                posestmp.pose.position.x = sstt.reals().at(0);
+                posestmp.pose.position.y = sstt.reals().at(1);
+                posestmp.pose.position.z = sstt.reals().at(2);
+                Eigen::Quaterniond q(Eigen::AngleAxisd(sstt.reals().at(3), Eigen::Vector3d::UnitZ()));
+                posestmp.pose.orientation = tf2::toMsg(q);
+                path.poses.push_back(posestmp);
             }
 
             pathPub.publish(path);
