@@ -267,6 +267,7 @@
 		<sensor name="dynamics" type="odometry" rate="100.0">
 			<link name="Vehicle"/>
 			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.214"/>
+			<!-- <ros_publisher topic="/$(arg robot_name)/dynamics/odometry"/> -->
 			<ros_publisher topic="/$(arg robot_name)/stonefish/odometry"/>
 		</sensor>
 
@@ -308,8 +309,9 @@
 			<output_frame rpy="3.14159 0.0 3.1459" xyz="0.249 -0.377 -0.284"/>
 			<noise angular_velocity="0.00001745" linear_acceleration="0.0005"/>
 			<external_sensors dvl="dvl" gps="gps" pressure="pressure"/>
-			<ros_publisher topic="/$(arg robot_name)/navigator/navigation"
-				odometry_topic="/$(arg robot_name)/navigator/odometry"/>
+			<!-- <ros_publisher topic="/$(arg robot_name)/navigator/navigation"
+				odometry_topic="/$(arg robot_name)/navigator/odometry"/> -->
+			<ros_publisher topic="/$(arg robot_name)/navigator/navigation"/>
 		</sensor>
 
 		<sensor name="camara" type="camera" rate="10.0">
