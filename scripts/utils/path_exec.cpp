@@ -57,6 +57,7 @@ int main(int argc, char **argv)
         way_req.position.depth = pos.pose.position.z;
         // way_req.orientation.roll = 0.0;
         // way_req.orientation.pitch = 0.0;
+        std::cout << "pintl el yaw a ver si cambia de entido repentinamente";
         Eigen::Quaterniond q;
         tf2::fromMsg(pos.pose.orientation, q);
         way_req.orientation.yaw = q.toRotationMatrix().eulerAngles(2, 1, 0)[0];

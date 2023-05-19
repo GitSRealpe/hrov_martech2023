@@ -104,7 +104,7 @@ public:
         std::cout << nh_.getNamespace() << "\n";
         pathPub = nh_.advertise<hrov_martech2023::PointArray>("planner/path_result", 1, true);
 
-        auto dubss(std::make_shared<ob::DubinsStateSpace>(0.5));
+        auto dubss(std::make_shared<ob::DubinsStateSpace>(0.5, true));
         dubss->setName("Dubins");
         ob::RealVectorBounds bounds(2);
         bounds.setLow(-10);

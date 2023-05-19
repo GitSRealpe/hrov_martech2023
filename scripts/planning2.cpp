@@ -11,8 +11,6 @@
 // #include <tf/transform_listener.h>
 #include <rviz_visual_tools/rviz_visual_tools.h>
 
-#include <hrov_martech2023/PlanGoal.h>
-
 // OMPL STUFF
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>

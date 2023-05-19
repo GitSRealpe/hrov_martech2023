@@ -74,7 +74,7 @@ def menuCB(feedback: InteractiveMarkerFeedback):
     # server.applyChanges()
     req = PlanGoalRequest()
     req.position = feedback.pose.position
-    req.yaw = 0
+    req.yaw = 1.57
     reqPath(req)
     # res = reqPath(req)
     # print(res)

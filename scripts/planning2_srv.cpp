@@ -239,6 +239,8 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
 
+    std::cout << "OMPL version: " << OMPL_VERSION << std::endl;
+
     octomap_msgs::OctomapConstPtr mapa_msg = ros::topic::waitForMessage<octomap_msgs::Octomap>("/octomap_binary");
     octomap::AbstractOcTree *abs_tree = octomap_msgs::msgToMap(*mapa_msg);
     std::shared_ptr<octomap::OcTree> octree(dynamic_cast<octomap::OcTree *>(abs_tree));
