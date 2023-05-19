@@ -21,6 +21,7 @@
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/base/spaces/SO2StateSpace.h>
 #include <ompl/base/spaces/DubinsStateSpace.h>
+#include <ompl/base/spaces/ReedsSheppStateSpace.h>
 #include <ompl/base/PlannerData.h>
 #include <ompl/geometric/SimpleSetup.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
@@ -28,7 +29,6 @@
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
 #include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
 #include <ompl/geometric/planners/sbl/SBL.h>
-#include <ompl/tools/benchmark/Benchmark.h>
 
 // FCL STUFF
 // #include <fcl/fcl.h>
@@ -36,6 +36,9 @@
 #include <fcl/narrowphase/collision.h>
 #include <fcl/narrowphase/collision_request.h>
 #include <fcl/narrowphase/collision_result.h>
+
+// stuff
+#include <chrono>
 
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
@@ -67,7 +70,10 @@ public:
 
         fcl::CollisionRequestf col_req_;
         fcl::CollisionResultf col_res_;
+        // std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
         fcl::collide(tree_obj_.get(), auv_co_.get(), col_req_, col_res_);
+        // std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        // std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[us]" << std::endl;
 
         if (col_res_.isCollision())
         {
@@ -92,6 +98,7 @@ private:
     ompl::base::ProblemDefinitionPtr pdef_;
     // std::shared_ptr<og::RRTConnect> planner_;
     std::shared_ptr<og::RRT> planner_;
+    // std::shared_ptr<og::KPIECE1> planner_;
     std::shared_ptr<fcl::CollisionObjectf> tree_obj_;
 
     rviz_visual_tools::RvizVisualToolsPtr visual_tools_;
@@ -104,11 +111,12 @@ public:
         std::cout << nh_.getNamespace() << "\n";
         pathPub = nh_.advertise<nav_msgs::Path>("planner/path_result", 1, true);
 
-        auto dubss(std::make_shared<ob::DubinsStateSpace>(0.5));
+        auto dubss(std::make_shared<ob::DubinsStateSpace>(0.5, true));
+        // auto dubss(std::make_shared<ob::ReedsSheppStateSpace>(1.0));
         dubss->setName("Dubins");
         ob::RealVectorBounds bounds(2);
-        bounds.setLow(-10);
-        bounds.setHigh(10);
+        bounds.setLow(-6);
+        bounds.setHigh(6);
         dubss->setBounds(bounds);
         auto zss(std::make_shared<ob::RealVectorStateSpace>(1));
         zss->setName("Z");
@@ -119,21 +127,24 @@ public:
         navSpace_ = dubss + zss;
         navSpace_->setName("navSpace");
         auto si(std::make_shared<ob::SpaceInformation>(navSpace_));
-        si->printSettings();
 
         tree_obj_ = tree;
         std::cout << "\n";
         si->setStateValidityChecker(ob::StateValidityCheckerPtr(new Validator(si, tree_obj_)));
+        si->setup();
+        si->printSettings();
 
         // create a problem instance
         pdef_ = std::make_shared<ob::ProblemDefinition>(si);
         // create a planner for the defined space
         // planner_ = (std::make_shared<og::RRTConnect>(si));
         planner_ = (std::make_shared<og::RRT>(si));
+        // planner_ = (std::make_shared<og::KPIECE1>(si));
         // set the problem we are trying to solve for the planner_
         planner_->setProblemDefinition(pdef_);
         // perform setup steps for the planner_
         planner_->setRange(0.5);
+        // planner_->set
         planner_->setup();
 
         // planner_->setIntermediateStates(false);
@@ -188,15 +199,18 @@ public:
         pdef_->fixInvalidInputStates(0, 2, 100);
         pdef_->print();
 
+        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
         // attempt to solve the problem
         ob::PlannerStatus status = planner_->ob::Planner::solve(30.0);
         std::cout << status << "\n";
         if (status)
         {
             std::cout << "Found solution:\n";
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             og::PathGeometric pathres = *pdef_->getSolutionPath()->as<og::PathGeometric>();
-            // pathres.interpolate(pathres.getStateCount()*2);
+            pathres.interpolate(pathres.getStateCount() * 2);
             // pathr.printAsMatrix(std::cout);
             std::cout << pathres.getStateCount() << "\n";
 
