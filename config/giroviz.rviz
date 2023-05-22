@@ -310,19 +310,19 @@ Visualization Manager:
       Unreliable: false
       Value: true
     - Class: rviz/MarkerArray
-      Enabled: true
+      Enabled: false
       Marker Topic: /kcentroids
-      Name: MarkerArray
+      Name: centroids
       Namespaces:
         {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /frontiers
-      Name: Marker
+      Name: frontiers
       Namespaces:
-        {}
+        cubos: true
       Queue Size: 100
       Value: true
     - Class: rviz/InteractiveMarkers
@@ -337,10 +337,9 @@ Visualization Manager:
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /rviz_visual_markers
-      Name: MarkerArray
+      Name: Path
       Namespaces:
-        Arrow: true
-        Path: true
+        {}
       Queue Size: 100
       Value: true
   Enabled: true
@@ -371,7 +370,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.278552055358887
+      Distance: 6.621415615081787
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -379,17 +378,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.1627688705921173
-        Y: -0.5253539085388184
-        Z: -1.268659234046936
+        X: 0.5364454388618469
+        Y: -1.2961581945419312
+        Z: -1.8451943397521973
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6797960996627808
+      Pitch: 0.5147970914840698
       Target Frame: <Fixed Frame>
-      Yaw: 0.3549983501434326
+      Yaw: 0.6399886608123779
     Saved:
       - Angle: 1.584999442100525
         Class: rviz/TopDownOrtho
