@@ -17,6 +17,8 @@ from interactive_markers.menu_handler import *
 
 from geometry_msgs.msg import Pose
 
+from tf.transformations import euler_from_quaternion
+
 rospy.init_node("clustering_node", anonymous=True)
 
 reqPath = rospy.ServiceProxy("getPath", PlanGoal)
@@ -72,6 +74,7 @@ def makeMenuMarker(name, pos):
 
     control = InteractiveMarkerControl()
     control.name = "move_x"
+    control.orientation_mode = InteractiveMarkerControl.FIXED
     control.interaction_mode = InteractiveMarkerControl.NONE
     int_marker.controls.append(copy.deepcopy(control))
 
@@ -81,6 +84,7 @@ def makeMenuMarker(name, pos):
     control.orientation.y = 0
     control.orientation.z = 1
     control.name = "move_y"
+    control.orientation_mode = InteractiveMarkerControl.FIXED
     control.interaction_mode = InteractiveMarkerControl.NONE
     int_marker.controls.append(copy.deepcopy(control))
 
@@ -90,6 +94,7 @@ def makeMenuMarker(name, pos):
     control.orientation.y = 1
     control.orientation.z = 0
     control.name = "move_z"
+    control.orientation_mode = InteractiveMarkerControl.FIXED
     control.interaction_mode = InteractiveMarkerControl.NONE
     int_marker.controls.append(copy.deepcopy(control))
 
@@ -103,7 +108,7 @@ def makeMenuMarker(name, pos):
 
 def markerCB(feedback: InteractiveMarkerFeedback):
     # print("left click clicked\n")
-    print(feedback.pose)
+    # print(feedback.pose)
     feedback.client_id = 0
 
 
@@ -111,12 +116,20 @@ def menuCB(feedback: InteractiveMarkerFeedback):
     rospy.loginfo("Requesting path.")
     rospy.loginfo(feedback.marker_name)
     rospy.loginfo(feedback.menu_entry_id)
-    print(feedback.pose)
+    # print(feedback.pose)
 
     req = PlanGoalRequest()
     req.position = feedback.pose.position
-    req.yaw = 1.57
-    # reqPath(req)
+    req.yaw = euler_from_quaternion(
+        [
+            feedback.pose.orientation.x,
+            feedback.pose.orientation.y,
+            feedback.pose.orientation.z,
+            feedback.pose.orientation.w,
+        ]
+    )[2]
+    print(req)
+    reqPath(req)
 
 
 def modCB(feedback: InteractiveMarkerFeedback):
