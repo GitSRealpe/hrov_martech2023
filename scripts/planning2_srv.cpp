@@ -96,7 +96,6 @@ public:
 
         std::cout << "creando planer\n";
         std::cout << nh_.getNamespace() << "\n";
-        // pathPub = nh_.advertise<hrov_martech2023::PointArray>("planner/path_result", 1, true);
         pathPub = nh_.advertise<nav_msgs::Path>("planner/path_result", 1, true);
         auto r3(std::make_shared<ob::RealVectorStateSpace>(3));
         r3->setName("Position");
@@ -189,10 +188,10 @@ public:
 
             og::PathGeometric pathres = *pdef_->getSolutionPath()->as<og::PathGeometric>();
             std::cout << pathres.getStateCount() << "\n";
+            pathres.interpolate(pathres.getStateCount() * 2);
 
             EigenSTL::vector_Vector3d puntos;
             Eigen::Isometry3d punto;
-            // hrov_martech2023::PointArray path;
             nav_msgs::Path path;
             geometry_msgs::PoseStamped posestmp;
             std::vector<rviz_visual_tools::colors> colors;
