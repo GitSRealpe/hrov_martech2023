@@ -51,39 +51,108 @@ def makeMenuMarker(name, pos):
     marker.color.g = 0.796
     marker.color.b = 0.0
     marker.color.a = 1
-
     control.markers.append(marker)
-    int_marker.controls.append(control)
+
+    marker = Marker()
+    marker.type = Marker.ARROW
+    marker.pose.position.x = -0.6
+    marker.pose.position.z = -0.16
+    marker.pose.orientation.y = -0.131
+    marker.pose.orientation.w = 0.991
+    marker.scale.x = 0.3
+    marker.scale.y = 0.1
+    marker.scale.z = 0.1
+    marker.color.r = 0
+    marker.color.g = 0.796
+    marker.color.b = 1
+    marker.color.a = 0
+    control.markers.append(marker)
+
+    int_marker.controls.append(copy.deepcopy(control))
+
+    control = InteractiveMarkerControl()
+    control.name = "move_x"
+    control.interaction_mode = InteractiveMarkerControl.NONE
+    int_marker.controls.append(copy.deepcopy(control))
+
+    control = InteractiveMarkerControl()
+    control.orientation.w = 1
+    control.orientation.x = 0
+    control.orientation.y = 0
+    control.orientation.z = 1
+    control.name = "move_y"
+    control.interaction_mode = InteractiveMarkerControl.NONE
+    int_marker.controls.append(copy.deepcopy(control))
+
+    control = InteractiveMarkerControl()
+    control.orientation.w = 1
+    control.orientation.x = 0
+    control.orientation.y = 1
+    control.orientation.z = 0
+    control.name = "move_z"
+    control.interaction_mode = InteractiveMarkerControl.NONE
+    int_marker.controls.append(copy.deepcopy(control))
+
+    control.name = "rotate_z"
+    control.interaction_mode = InteractiveMarkerControl.NONE
+    int_marker.controls.append(copy.deepcopy(control))
 
     server.insert(int_marker, markerCB)
+    # server.insert(int_marker)
 
 
 def markerCB(feedback: InteractiveMarkerFeedback):
-    print("left click clicked\n")
+    # print("left click clicked\n")
+    print(feedback.pose)
+    feedback.client_id = 0
 
 
 def menuCB(feedback: InteractiveMarkerFeedback):
-    # if feedback.event_type == feedback.MENU_SELECT:
-    rospy.loginfo("Clicked menu.")
+    rospy.loginfo("Requesting path.")
     rospy.loginfo(feedback.marker_name)
     rospy.loginfo(feedback.menu_entry_id)
     print(feedback.pose)
-    # im = server.get(feedback.marker_name)
-    # im.controls[0].markers[0].color.b = 1
-    # server.insert(im)
-    # server.applyChanges()
+
     req = PlanGoalRequest()
     req.position = feedback.pose.position
     req.yaw = 1.57
-    reqPath(req)
-    # res = reqPath(req)
-    # print(res)
+    # reqPath(req)
+
+
+def modCB(feedback: InteractiveMarkerFeedback):
+    rospy.loginfo("Goal Selected.")
+    rospy.loginfo(feedback.marker_name)
+    rospy.loginfo(feedback.menu_entry_id)
+
+    im = server.get("marker0")
+    i = 0
+    while im != None:
+        im.controls[0].markers[0].color.b = 0
+        im.controls[0].markers[1].color.a = 0
+        im.controls[1].interaction_mode = InteractiveMarkerControl.NONE
+        im.controls[2].interaction_mode = InteractiveMarkerControl.NONE
+        im.controls[3].interaction_mode = InteractiveMarkerControl.NONE
+        im.controls[4].interaction_mode = InteractiveMarkerControl.NONE
+        server.insert(im)
+        i = i + 1
+        im = server.get("marker" + str(i))
+
+    server.applyChanges()
+
+    im = server.get(feedback.marker_name)
+    im.controls[0].markers[0].color.b = 1
+    im.controls[0].markers[1].color.a = 1
+    im.controls[1].interaction_mode = InteractiveMarkerControl.MOVE_AXIS
+    im.controls[2].interaction_mode = InteractiveMarkerControl.MOVE_AXIS
+    im.controls[3].interaction_mode = InteractiveMarkerControl.MOVE_AXIS
+    im.controls[4].interaction_mode = InteractiveMarkerControl.ROTATE_AXIS
+    server.insert(im)
+    server.applyChanges()
 
 
 def initMenu():
-    global h_first_entry, h_mode_last
-    h_first_entry = menu_handler.insert("Select as goal", callback=menuCB)
-    h_first_entry = menu_handler.insert("Request Path", callback=menuCB)
+    menu_handler.insert("Select as goal", callback=modCB)
+    menu_handler.insert("Request Path", callback=menuCB)
 
 
 server = InteractiveMarkerServer("menu")
