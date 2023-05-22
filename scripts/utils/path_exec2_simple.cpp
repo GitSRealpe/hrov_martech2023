@@ -48,41 +48,40 @@ int main(int argc, char **argv)
     // l.translation().x() = 1;
     // double l = 0.6;
     double l = 0;
-    double kp = 5;
+    double kp = 0.1;
     double err_x, err_y, err_z = 10;
     // mas fancy haciendo un struct con cava error con su nombre
     // std::vector<double> err = {10, 10, 10};
     Eigen::Vector3d err(10, 10, 10);
-    while (ros::ok())
+    // for (auto pos : path->poses)
+    // {
+    tf2::fromMsg(path->poses.at(0).pose, mat_goal);
+
+    while (err_x > 0.2 || err_y > 0.2 || err_z > 0.2)
     {
-        for (auto pos : path->poses)
-        {
+        t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
+        mat_curr = tf2::transformToEigen(t);
+        // mat_goal.translation() = mat_curr.translation() + l.translation();
 
-            tf2::fromMsg(pos.pose, mat_goal);
+        err_x = mat_goal.translation().x() - mat_curr.translation().x() + l;
+        err_y = mat_goal.translation().y() - mat_curr.translation().y() + l;
+        err_z = mat_goal.translation().z() - mat_curr.translation().z() + l;
+        std::cout << "err_x: " << err_x << "\n";
+        std::cout << "err_y: " << err_y << "\n";
+        std::cout << "err_z: " << err_z << "\n";
 
-            t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
-            mat_curr = tf2::transformToEigen(t);
-            // mat_goal.translation() = mat_curr.translation() + l.translation();
+        vel_req.twist.linear.x = kp * err_x;
+        vel_req.twist.linear.y = kp * err_y;
+        vel_req.twist.linear.z = kp * err_z;
 
-            err_x = mat_goal.translation().x() - mat_curr.translation().x() + l;
-            err_y = mat_goal.translation().y() - mat_curr.translation().y() + l;
-            err_z = mat_goal.translation().z() - mat_curr.translation().z() + l;
-            std::cout << "err_x: " << err_x << "\n";
-            std::cout << "err_y: " << err_y << "\n";
-            std::cout << "err_z: " << err_z << "\n";
-
-            vel_req.twist.linear.x = 2 * err_x;
-            vel_req.twist.linear.y = 10 * err_y;
-            vel_req.twist.linear.z = 1 * err_z;
-
-            vel_req.header.stamp = ros::Time::now();
-
-            pub.publish(vel_req);
-            ros::Duration(0.1).sleep();
-        }
-        std::cout << "path done\n";
-        std::cin.get();
+        vel_req.header.stamp = ros::Time::now();
+        pub.publish(vel_req);
+        ros::Duration(0.1).sleep();
     }
+
+    // }
+    std::cout << "path done\n";
+
     // while (ros::ok())
     // {
     //     ros::spinOnce();
