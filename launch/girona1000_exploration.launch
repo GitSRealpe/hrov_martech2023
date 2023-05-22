@@ -33,7 +33,8 @@
 
         <!-- Run Simulator -->
         <arg name="simulation_data" value="$(find hrov_martech2023)/data"/>
-        <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/girona1000_tank.scn"/>
+        <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/porto_do_castelo.scn"/>
+        <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/girona1000_tank.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/corridor.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/cylinder.scn"/> -->
         <arg name="simulation_rate" value="100.0"/>

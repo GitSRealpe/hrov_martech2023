@@ -1,0 +1,327 @@
+<?xml version="1.0"?>
+<scenario>
+	<environment>
+		<ned latitude="41.7777" longitude="3.0333"/>
+		<ocean/>
+		<atmosphere>
+			<sun azimuth="108.0" elevation="50.0"/>
+		</atmosphere>
+	</environment>
+
+	<materials>
+		<material name="Neutral" density="1000.0" restitution="0.2"/>
+		<material name="Rock" density="3000.0" restitution="0.8"/>
+		<material name="Fiberglass" density="1500.0" restitution="0.2"/>
+		<material name="Aluminium" density="2710.0" restitution="0.5"/>
+		<material name="Polyamide" density="1500.0" restitution="0.1"/>
+		<friction_table>
+			<friction material1="Neutral" material2="Neutral" static="0.5" dynamic="0.2"/>
+			<friction material1="Neutral" material2="Rock" static="0.2" dynamic="0.1"/>
+			<friction material1="Neutral" material2="Fiberglass" static="0.5" dynamic="0.2"/>
+			<friction material1="Neutral" material2="Aluminium" static="0.5" dynamic="0.2"/>
+			<friction material1="Neutral" material2="Polyamide" static="0.1" dynamic="0.05"/>
+			<friction material1="Rock" material2="Rock" static="0.9" dynamic="0.7"/>
+			<friction material1="Rock" material2="Fiberglass" static="0.6" dynamic="0.4"/>
+			<friction material1="Rock" material2="Aluminium" static="0.6" dynamic="0.3"/>
+			<friction material1="Rock" material2="Polyamide" static="0.2" dynamic="0.1"/>
+			<friction material1="Fiberglass" material2="Fiberglass" static="0.5" dynamic="0.2"/>
+			<friction material1="Fiberglass" material2="Aluminium" static="0.5" dynamic="0.2"/>
+			<friction material1="Fiberglass" material2="Polyamide" static="0.5" dynamic="0.2"/>
+			<friction material1="Aluminium" material2="Aluminium" static="0.8" dynamic="0.5"/>
+			<friction material1="Aluminium" material2="Polyamide" static="0.1" dynamic="0.05"/>
+			<friction material1="Polyamide" material2="Polyamide" static="0.1" dynamic="0.05"/>
+		</friction_table>
+	</materials>
+
+	<looks>
+		<look name="black" gray="0.05" roughness="0.2"/>
+		<look name="yellow" rgb="1.0 0.9 0.0" roughness="0.3"/>
+		<look name="white" gray="0.95" roughness="0.7"/>
+		<look name="gray" gray="0.3" roughness="0.4" metalness="0.5"/>
+		<look name="seabed" rgb="0.7 0.7 0.5" roughness="0.9"/>
+		<look name="duct" gray="0.1" roughness="0.4" metalness="0.5"/>
+		<look name="porto_do_castelo" gray="1.00" roughness="1.0" texture="$(find hrov_martech2023)/data/porto_do_castelo/porto_do_castelo.png"/>
+		<look name="buoy" gray="1.00" roughness="1.0" texture="$(find hrov_martech2023)/data/porto_do_castelo/buoy_texture.png"/>
+		<look name="rock" gray="1.00" roughness="1.0" texture="$(find hrov_martech2023)/data/porto_do_castelo/rock_texture.png"/>
+	</looks>
+
+	<!-- <static name="Bottom" type="model">
+		<material name="Rock"/>
+		<look name="porto_do_castelo"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/porto_do_castelo_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/porto_do_castelo_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 5.0"/>
+	</static> -->
+
+	<static name="Floor" type="plane">
+		<material name="Aluminium"/>
+		<look name="Gray"/>
+		<world_transform xyz="0.0 0.0 5.0" rpy="0.0 0.0 0.0"/>
+	</static>
+
+	<!-- <static name="Monopile" type="model">
+		<material name="Aluminium"/>
+		<look name="yellow"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/monopile_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/monopile_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="95.985 -44.49 3.0"/>
+	</static> -->
+	<!-- <static name="Monopile_ladder" type="model">
+		<material name="Aluminium"/>
+		<look name="manipulator"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/monopile_ladder_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/monopile_ladder_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="95.985 -44.49 3.0"/>
+	</static> -->
+
+	<static name="Floating_pilar" type="model">
+		<material name="Aluminium"/>
+		<look name="yellow"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="2.59 7 0.0"/>
+	</static>
+	<static name="Floating_pilar_ladder" type="model">
+		<material name="Aluminium"/>
+		<look name="manipulator"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_ladder_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_ladder_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="2.59 45.49 0.0"/>
+	</static>
+	<static name="Floating_pilar_beam" type="model">
+		<material name="Aluminium"/>
+		<look name="yellow"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_beam_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_beam_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="2.59 45.49 0.0"/>
+	</static>
+	<static name="Floating_pilar_beam1" type="model">
+		<material name="Aluminium"/>
+		<look name="yellow"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_beam_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 -2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_beam_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 -2.0943951" xyz="2.59 45.49 0.0"/>
+	</static>
+	<static name="Floating_pilar_beam2" type="model">
+		<material name="Aluminium"/>
+		<look name="yellow"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_beam_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_beam_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 2.0943951" xyz="2.59 45.49 0.0"/>
+	</static>
+
+	<!-- <static name="Floating_pilar_buoy1" type="model">
+		<material name="Neutral"/>
+		<look name="buoy"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="0.0 92.95 0.0"/>
+	</static>
+	<static name="Floating_pilar_buoy2" type="model">
+		<material name="Neutral"/>
+		<look name="buoy"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="0.0 19.5 0.0"/>
+	</static>
+	<static name="Floating_pilar_buoy3" type="model">
+		<material name="Neutral"/>
+		<look name="buoy"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="-37.5 56.0 0.0"/>
+	</static>
+	<static name="Floating_pilar_buoy4" type="model">
+		<material name="Neutral"/>
+		<look name="buoy"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="36.35 56.0 0.0"/>
+	</static>
+
+	<static name="Floating_pilar_buoy_rock1" type="model">
+		<material name="Neutral"/>
+		<look name="rock"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/square_rock_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/square_rock_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="-0.2 0.0 0.6" xyz="-3.8 86.3 10.2"/>
+	</static>
+	<static name="Floating_pilar_buoy_rock2" type="model">
+		<material name="Neutral"/>
+		<look name="rock"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/square_rock_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/square_rock_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.1 0.3 0.174" xyz="-6.35 16.5 10.6"/>
+	</static>
+	<static name="Floating_pilar_buoy_rock3" type="model">
+		<material name="Neutral"/>
+		<look name="rock"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/square_rock_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/square_rock_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 -0.3 -0.4" xyz="-35.42 48.7 10.8"/>
+	</static>
+	<static name="Floating_pilar_buoy_rock4" type="model">
+		<material name="Neutral"/>
+		<look name="rock"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/square_rock_collision.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/square_rock_visual.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.1 0.4" xyz="33.785 50.9 5.9"/>
+	</static>
+
+	<static name="Floating_pilar_buoy1_rope" type="model">
+		<material name="Neutral"/>
+		<look name="buoy"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_1_rope.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_1_rope.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="0.0 92.95 0.0"/>
+	</static>
+	<static name="Floating_pilar_buoy2_rope" type="model">
+		<material name="Neutral"/>
+		<look name="buoy"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_2_rope.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_2_rope.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="0.0 19.5 0.0"/>
+	</static>
+	<static name="Floating_pilar_buoy3_rope" type="model">
+		<material name="Neutral"/>
+		<look name="buoy"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_3_rope.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_3_rope.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="-37.5 56.0 0.0"/>
+	</static>
+	<static name="Floating_pilar_buoy4_rope" type="model">
+		<material name="Neutral"/>
+		<look name="buoy"/>
+		<physical>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_4_rope.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 2.0943951" xyz="0.0 0.0 0.0"/>
+		</physical>
+		<visual>
+			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/buoy_4_rope.obj" scale="1.0"/>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+		</visual>
+		<world_transform rpy="0.0 0.0 0.0" xyz="36.35 56.0 0.0"/>
+	</static> -->
+
+
+	<include file="$(find hrov_martech2023)/scenarios/girona1000.scn">
+		<arg name="robot_name" value="girona1000"/>
+		<arg name="start_yaw" value="0.0"/>
+		<arg name="start_position" value="0.0 0.0 0.0"/>
+	</include>
+
+</scenario>
