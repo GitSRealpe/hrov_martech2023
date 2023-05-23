@@ -103,7 +103,7 @@
 			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_visual.obj" scale="1.0"/>
 			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
 		</visual>
-		<world_transform rpy="0.0 0.0 0.0" xyz="2.59 7 0.0"/>
+		<world_transform rpy="0.0 0.0 0.0" xyz="0 7 0.0"/>
 	</static>
 	<static name="Floating_pilar_ladder" type="model">
 		<material name="Aluminium"/>
@@ -116,7 +116,7 @@
 			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_ladder_visual.obj" scale="1.0"/>
 			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
 		</visual>
-		<world_transform rpy="0.0 0.0 0.0" xyz="2.59 45.49 0.0"/>
+		<world_transform rpy="0.0 0.0 0.0" xyz="0 7 0.0"/>
 	</static>
 	<static name="Floating_pilar_beam" type="model">
 		<material name="Aluminium"/>
@@ -129,7 +129,7 @@
 			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_beam_visual.obj" scale="1.0"/>
 			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
 		</visual>
-		<world_transform rpy="0.0 0.0 0.0" xyz="2.59 45.49 0.0"/>
+		<world_transform rpy="0.0 0.0 0.0" xyz="0 7 0.0"/>
 	</static>
 	<static name="Floating_pilar_beam1" type="model">
 		<material name="Aluminium"/>
@@ -142,7 +142,7 @@
 			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_beam_visual.obj" scale="1.0"/>
 			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
 		</visual>
-		<world_transform rpy="0.0 0.0 -2.0943951" xyz="2.59 45.49 0.0"/>
+		<world_transform rpy="0.0 0.0 -2.0943951" xyz="0 7 0.0"/>
 	</static>
 	<static name="Floating_pilar_beam2" type="model">
 		<material name="Aluminium"/>
@@ -155,7 +155,7 @@
 			<mesh filename="$(find hrov_martech2023)/data/porto_do_castelo/floating_pillar_beam_visual.obj" scale="1.0"/>
 			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
 		</visual>
-		<world_transform rpy="0.0 0.0 2.0943951" xyz="2.59 45.49 0.0"/>
+		<world_transform rpy="0.0 0.0 2.0943951" xyz="0 7 0.0"/>
 	</static>
 
 	<!-- <static name="Floating_pilar_buoy1" type="model">

@@ -9,7 +9,6 @@
 #include <nav_msgs/Path.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_eigen/tf2_eigen.h>
-// #include <tf/transform_listener.h>
 #include <rviz_visual_tools/rviz_visual_tools.h>
 
 // package stuff
@@ -136,7 +135,7 @@ public:
         ob::RealVectorBounds bounds(3);
         bounds.setLow(0, -10);
         bounds.setHigh(0, 10);
-        bounds.setLow(1, -10);
+        bounds.setLow(1, -5);
         bounds.setHigh(1, 10);
         // bounds.setLow(2, -5);
         // bounds.setHigh(2, -0.5);
@@ -147,6 +146,8 @@ public:
         so2->setName("Yaw");
         navSpace_ = r3 + so2;
         navSpace_->setName("navSpace");
+        navSpace_->setLongestValidSegmentFraction(0.1);
+        // navSpace_->setup();
         auto si(std::make_shared<ob::SpaceInformation>(navSpace_));
 
         tree_obj_ = tree;
@@ -158,14 +159,14 @@ public:
         // create a problem instance
         pdef_ = std::make_shared<ob::ProblemDefinition>(si);
         // create a planner for the defined space
-        // planner_ = std::make_shared<og::RRTConnect>(si);
+        planner_ = std::make_shared<og::RRTConnect>(si);
         // planner_ = std::make_shared<og::RRTstar>(si);
         // planner_ = std::make_shared<og::LazyRRT>(si);
-        planner_ = std::make_shared<og::LazyPRM>(si);
+        // planner_ = std::make_shared<og::LazyPRM>(si);
         // set the problem we are trying to solve for the planner_
         planner_->setProblemDefinition(pdef_);
         // perform setup steps for the planner_
-        // planner_->params().setParam("range", "0.7");
+        planner_->params().setParam("range", "2");
         planner_->setup();
 
         planner_->printSettings(std::cout);
