@@ -8,7 +8,6 @@
 #include <geometry_msgs/Pose.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_eigen/tf2_eigen.h>
-// #include <tf/transform_listener.h>
 #include <rviz_visual_tools/rviz_visual_tools.h>
 #include <nav_msgs/Path.h>
 
@@ -26,9 +25,6 @@
 #include <ompl/geometric/SimpleSetup.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
-#include <ompl/geometric/planners/kpiece/KPIECE1.h>
-#include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
-#include <ompl/geometric/planners/sbl/SBL.h>
 
 // FCL STUFF
 // #include <fcl/fcl.h>
@@ -88,17 +84,32 @@ public:
     }
 };
 
+fcl::CollisionObjectf getMapa()
+{
+    std::cout << "getting updated map\n";
+    octomap_msgs::OctomapConstPtr mapa_msg = ros::topic::waitForMessage<octomap_msgs::Octomap>("/octomap_binary");
+    octomap::AbstractOcTree *abs_tree = octomap_msgs::msgToMap(*mapa_msg);
+    std::shared_ptr<octomap::OcTree> octree(dynamic_cast<octomap::OcTree *>(abs_tree));
+    std::shared_ptr<fcl::OcTreef> tree(new fcl::OcTreef(octree));
+    std::cout << tree->getFreeThres() << "\n";
+    std::shared_ptr<fcl::CollisionGeometryf> geo(tree);
+    std::shared_ptr<fcl::CollisionObjectf> tree_obj(new fcl::CollisionObjectf(geo));
+    return *tree_obj;
+}
+
 class Planeador
 {
 private:
     ros::NodeHandle nh_;
     ros::Publisher pathPub;
+    geometry_msgs::TransformStamped t;
+    std::shared_ptr<tf2_ros::TransformListener> tfListener;
+    tf2_ros::Buffer tfBuffer;
 
     ob::StateSpacePtr navSpace_;
     ompl::base::ProblemDefinitionPtr pdef_;
-    // std::shared_ptr<og::RRTConnect> planner_;
-    std::shared_ptr<og::RRT> planner_;
-    // std::shared_ptr<og::KPIECE1> planner_;
+    // std::shared_ptr<og::RRT> planner_;
+    ob::PlannerPtr planner_;
     std::shared_ptr<fcl::CollisionObjectf> tree_obj_;
 
     rviz_visual_tools::RvizVisualToolsPtr visual_tools_;
@@ -107,6 +118,7 @@ private:
 public:
     Planeador(ros::NodeHandle nh, std::shared_ptr<fcl::CollisionObjectf> tree) : nh_(nh)
     {
+        tfListener.reset(new tf2_ros::TransformListener(tfBuffer));
         std::cout << "creando planer\n";
         std::cout << nh_.getNamespace() << "\n";
         pathPub = nh_.advertise<nav_msgs::Path>("planner/path_result", 1, true);
@@ -115,8 +127,8 @@ public:
         // auto dubss(std::make_shared<ob::ReedsSheppStateSpace>(1.0));
         dubss->setName("Dubins");
         ob::RealVectorBounds bounds(2);
-        bounds.setLow(-6);
-        bounds.setHigh(6);
+        bounds.setLow(-10);
+        bounds.setHigh(10);
         dubss->setBounds(bounds);
         auto zss(std::make_shared<ob::RealVectorStateSpace>(1));
         zss->setName("Z");
@@ -126,6 +138,7 @@ public:
         zss->setBounds(bounds2);
         navSpace_ = dubss + zss;
         navSpace_->setName("navSpace");
+        navSpace_->setLongestValidSegmentFraction(0.1);
         auto si(std::make_shared<ob::SpaceInformation>(navSpace_));
 
         tree_obj_ = tree;
@@ -143,11 +156,9 @@ public:
         // set the problem we are trying to solve for the planner_
         planner_->setProblemDefinition(pdef_);
         // perform setup steps for the planner_
-        planner_->setRange(0.5);
-        // planner_->set
+        planner_->params().setParam("range", "1");
         planner_->setup();
 
-        // planner_->setIntermediateStates(false);
         planner_->printSettings(std::cout);
 
         visual_tools_.reset(new rviz_visual_tools::RvizVisualTools("world_ned", "/rviz_visual_markers"));
@@ -158,27 +169,12 @@ public:
     bool doPlan(hrov_martech2023::PlanGoal::Request &req, hrov_martech2023::PlanGoal::Response &res)
     {
         std::cout << "en el servicio\n";
+        *tree_obj_ = getMapa();
         planner_->clear();
         pdef_->clearSolutionPaths();
         visual_tools_->deleteAllMarkers();
 
-        tf2_ros::Buffer tfBuffer;
-        tf2_ros::TransformListener tfListener(tfBuffer);
-        geometry_msgs::TransformStamped t;
-        while (true)
-        {
-            try
-            {
-                t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
-                break;
-            }
-            catch (tf2::TransformException &ex)
-            {
-                ROS_WARN("%s", ex.what());
-                ros::Duration(0.2).sleep();
-                continue;
-            }
-        }
+        t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
         std::cout << t << "\n";
 
         ob::ScopedState<> current(navSpace_);
@@ -210,14 +206,12 @@ public:
             std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
             og::PathGeometric pathres = *pdef_->getSolutionPath()->as<og::PathGeometric>();
+            std::cout << pathres.getStateCount() << "\n";
             pathres.interpolate(pathres.getStateCount() * 2);
             // pathr.printAsMatrix(std::cout);
-            std::cout << pathres.getStateCount() << "\n";
 
             EigenSTL::vector_Vector3d puntos;
             Eigen::Isometry3d punto;
-            // hrov_martech2023::PointArray path;
-            // geometry_msgs::Point point;
             nav_msgs::Path path;
             geometry_msgs::PoseStamped posestmp;
             std::vector<rviz_visual_tools::colors> colors;
@@ -264,16 +258,9 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
 
-    octomap_msgs::OctomapConstPtr mapa_msg = ros::topic::waitForMessage<octomap_msgs::Octomap>("/octomap_binary");
-    octomap::AbstractOcTree *abs_tree = octomap_msgs::msgToMap(*mapa_msg);
-    std::shared_ptr<octomap::OcTree> octree(dynamic_cast<octomap::OcTree *>(abs_tree));
+    std::cout << "OMPL version: " << OMPL_VERSION << std::endl;
 
-    std::shared_ptr<fcl::OcTreef> tree(new fcl::OcTreef(octree));
-    std::cout << tree->getFreeThres() << "\n";
-    std::shared_ptr<fcl::CollisionGeometryf> geo(tree);
-    std::shared_ptr<fcl::CollisionObjectf> tree_obj(new fcl::CollisionObjectf(geo));
-
-    Planeador plnr(nh, tree_obj);
+    Planeador plnr(nh, std::make_shared<fcl::CollisionObjectf>(getMapa()));
     ros::ServiceServer service = nh.advertiseService("getPath", &Planeador::doPlan, &plnr);
 
     while (ros::ok())
