@@ -6,6 +6,18 @@ project(hrov_martech2023)
 set(CMAKE_CXX_STANDARD 17)
 # set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# set(CMAKE_CXX_STANDARD 11)
+#   set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#   set(CMAKE_CXX_EXTENSIONS OFF)
+#   # this next line shouldn't be necessary, but doesn't always get added by cmake (e.g., for clang++-5)
+#   add_definitions(-std=c++11)
+
+set(CMAKE_MODULE_PATH
+  "${CMAKE_MODULE_PATH}"
+  "${CMAKE_CURRENT_SOURCE_DIR}")
+
+include(macros)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -118,63 +130,17 @@ list(APPEND LIBRARIES
     ${Boost_LIBRARIES}
 )
 
-## Add cmake target dependencies of the library
-## as an example, code may need to be generated before libraries
-## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/hrov_martech2023_node.cpp)
-add_executable(${PROJECT_NAME}_laser2ptcloud scripts/utils/laser2ptcloud.cpp)
-add_executable(${PROJECT_NAME}_octo_proc1 scripts/octo_proc1.cpp)
-add_executable(${PROJECT_NAME}_octo_proc2 scripts/octo_proc2.cpp)
-add_executable(${PROJECT_NAME}_planning2 scripts/planning2.cpp)
-add_executable(${PROJECT_NAME}_planning2_srv scripts/planning2_srv.cpp)
-add_executable(${PROJECT_NAME}_planning2dubs scripts/planning2dubs.cpp)
-add_executable(${PROJECT_NAME}_planning2dubs_srv scripts/planning2dubs_srv.cpp)
-add_executable(${PROJECT_NAME}_planning2dubs_bench scripts/planning2dubs_bench.cpp)
-
-add_executable(${PROJECT_NAME}_path_exec scripts/utils/path_exec.cpp)
-add_executable(${PROJECT_NAME}_path_exec2 scripts/utils/path_exec2.cpp)
-
-## Rename C++ executable without prefix
-## The above recommended prefix causes long target names, the following renames the
-## target back to the shorter version for ease of user use
-## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
-set_target_properties(${PROJECT_NAME}_laser2ptcloud PROPERTIES OUTPUT_NAME laser2ptcloud PREFIX "")
-set_target_properties(${PROJECT_NAME}_octo_proc1 PROPERTIES OUTPUT_NAME octo_proc1 PREFIX "")
-set_target_properties(${PROJECT_NAME}_octo_proc2 PROPERTIES OUTPUT_NAME octo_proc2 PREFIX "")
-set_target_properties(${PROJECT_NAME}_planning2 PROPERTIES OUTPUT_NAME planning2 PREFIX "")
-set_target_properties(${PROJECT_NAME}_planning2_srv PROPERTIES OUTPUT_NAME planning2_srv PREFIX "")
-set_target_properties(${PROJECT_NAME}_planning2dubs PROPERTIES OUTPUT_NAME planning2dubs PREFIX "")
-set_target_properties(${PROJECT_NAME}_planning2dubs_srv PROPERTIES OUTPUT_NAME planning2dubs_srv PREFIX "")
-set_target_properties(${PROJECT_NAME}_planning2dubs_bench PROPERTIES OUTPUT_NAME planning2dubs_bench PREFIX "")
-
-set_target_properties(${PROJECT_NAME}_path_exec PROPERTIES OUTPUT_NAME path_exec PREFIX "")
-set_target_properties(${PROJECT_NAME}_path_exec2 PROPERTIES OUTPUT_NAME path_exec2 PREFIX "")
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
-target_link_libraries(${PROJECT_NAME}_laser2ptcloud ${LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_octo_proc1 ${LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_octo_proc2 ${LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_planning2 ${LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_planning2_srv ${LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_planning2dubs ${LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_planning2dubs_srv ${LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_planning2dubs_bench ${LIBRARIES})
-
-target_link_libraries(${PROJECT_NAME}_path_exec ${catkin_LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_path_exec2 ${catkin_LIBRARIES})
+add_script(laser2ptcloud scripts/utils)
+add_script(octo_proc1 scripts)
+add_script(octo_proc2 scripts)
+# add_script(planning2 scripts)
+add_script(planning2_srv scripts)
+# add_script(planning2dubs scripts)
+add_script(planning2dubs_srv scripts)
+# add_script(planning2dubs_bench scripts)
+add_script(path_exec scripts/utils)
+add_script(path_exec2 scripts/utils)
+add_script(odom2tf scripts/utils)
 
 #############
 ## Install ##
