@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
 #include <tf2_ros/transform_listener.h>
@@ -19,19 +20,22 @@ public:
     std::shared_ptr<tf2_ros::TransformListener> tfListener;
     tf2_ros::Buffer tfBuffer;
 
-    cola2_msgs::BodyVelocityReq vel_req;
+    tf2::Transform mat_curr;
+    tf2::Transform mat_goal;
+    tf2::Transform error;
+    double roll, pitch, err_yaw, integral, derivative, last_error_x, last_error_y, last_error_z = 0;
+    ros::Duration dt;
+    ros::Time prev_t;
+    Eigen::Matrix3d pid_err;
+    bool near = false;
 
-    Eigen::Isometry3d mat_curr;
-    Eigen::Isometry3d mat_goal;
-    double l = 0;
-    double kp = 5;
-    double err_x, err_y, err_z, err_yaw = 10;
+    cola2_msgs::BodyVelocityReq vel_req;
 
     PID(ros::NodeHandle &nh) : nh_(nh)
     {
         std::cout << "Initializing PID controller\n";
         tfListener.reset(new tf2_ros::TransformListener(tfBuffer));
-        while (true)
+        while (ros::ok())
         {
             try
             {
@@ -51,6 +55,7 @@ public:
         vel_req.goal.priority = cola2_msgs::GoalDescriptor::PRIORITY_NORMAL;
 
         pub = nh_.advertise<cola2_msgs::BodyVelocityReq>("/girona1000/controller/body_velocity_req", 5, true);
+        prev_t = ros::Time::now();
     };
 
     void update(const ros::TimerEvent &event)
@@ -60,36 +65,52 @@ public:
 
         tf2::fromMsg(setPoint, mat_goal);
         t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
-        mat_curr = tf2::transformToEigen(t);
+        tf2::fromMsg(t.transform, mat_curr);
+        error = mat_curr.inverseTimes(mat_goal);
 
-        err_x = setPoint.position.x - t.transform.translation.x + l;
-        err_y = mat_goal.translation().y() - mat_curr.translation().y() + l;
-        err_z = mat_goal.translation().z() - mat_curr.translation().z() + l;
-        // std::cout << "err_x: " << err_x << "\n";
-        // std::cout << "err_y: " << err_y << "\n";
-        // std::cout << "err_z: " << err_z << "\n";
+        // std::cout << "err_x: " << error.getOrigin().x() << "\n";
+        // std::cout << "err_y: " << error.getOrigin().y() << "\n";
+        // std::cout << "err_z: " << error.getOrigin().z() << "\n";
+        tf2::Matrix3x3 m(error.getRotation());
+        m.getRPY(roll, pitch, err_yaw, 1);
 
-        // tf2::Quaternion q_curr(t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z, t.transform.rotation.w);
-        // tf2::Quaternion q_goal(setPoint.orientation.x, setPoint.orientation.y, setPoint.orientation.z, setPoint.orientation.w);
-        tf2::Quaternion q_curr;
-        tf2::Quaternion q_goal;
-        tf2::fromMsg(t.transform.rotation, q_curr);
-        tf2::fromMsg(setPoint.orientation, q_goal);
-        // err_yaw = tf2::angleShortestPath(q_goal, q_curr);
-        err_yaw = q_goal.getAngle() - q_curr.getAngle();
-        // err_yaw = mat_curr.rotation().eulerAngles(2, 1, 0)[0] - mat_curr.rotation().eulerAngles(2, 1, 0)[0];
-        // err_yaw = (mat_goal.rotation() * mat_curr.rotation().transpose()).eulerAngles(0, 1, 2)[2];
-        std::cout << "goal_yaw: " << q_goal.getAngle() << "\n";
-        std::cout << "curr_yaw: " << q_curr.getAngle() << "\n";
-        std::cout << "err_yaw: " << err_yaw << "\n";
+        // proportional
+        pid_err(0, 0) = 0.5 * error.getOrigin().x();
+        pid_err(1, 0) = 0.5 * error.getOrigin().y();
+        pid_err(2, 0) = 0.5 * error.getOrigin().z();
 
-        vel_req.twist.linear.x = 1 * err_x;
-        vel_req.twist.linear.y = 1 * err_y;
-        vel_req.twist.linear.z = 1 * err_z;
-        vel_req.twist.angular.z = 0 * err_yaw;
+        // integral for steady state error, pero
+        dt = ros::Time::now() - prev_t;
+        // integral += error.getOrigin().y() * dt.toSec();
+        // pid_err(1, 1) = 0.1 * integral;
+
+        // derivative smooths
+        derivative = (error.getOrigin().x() - last_error_x) / dt.toSec();
+        pid_err(0, 2) = 0.5 * derivative;
+        derivative = (error.getOrigin().y() - last_error_y) / dt.toSec();
+        pid_err(1, 2) = 0.5 * derivative;
+        derivative = (error.getOrigin().z() - last_error_z) / dt.toSec();
+        pid_err(2, 2) = 0.5 * derivative;
+
+        last_error_x = error.getOrigin().x();
+        last_error_y = error.getOrigin().y();
+        last_error_z = error.getOrigin().z();
+
+        prev_t = ros::Time::now();
+
+        std::cout << "x action:" << std::clamp(pid_err.row(0).sum(), -0.1, 0.1) << "\n";
+        std::cout << "y action:" << std::clamp(pid_err.row(1).sum(), -0.1, 0.1) << "\n";
+        std::cout << "z action:" << std::clamp(pid_err.row(2).sum(), -0.1, 0.1) << "\n";
+        std::cout << "raw_yaw: " << err_yaw << "\n";
+        vel_req.twist.linear.x = std::clamp(pid_err.row(0).sum(), -0.1, 0.1);
+        vel_req.twist.linear.y = std::clamp(pid_err.row(1).sum(), -0.1, 0.1);
+        vel_req.twist.linear.z = std::clamp(pid_err.row(2).sum(), -0.1, 0.1);
+        vel_req.twist.angular.z = std::clamp(0.7 * err_yaw, -0.05, 0.05);
         vel_req.header.stamp = ros::Time::now();
 
         pub.publish(vel_req);
+
+        near = error.getOrigin().length() < 0.2;
     }
 };
 
@@ -105,19 +126,19 @@ int main(int argc, char **argv)
 
     ros::AsyncSpinner spinner(2);
     spinner.start();
-    while (ros::ok())
+
+    for (auto pos : path->poses)
     {
-
-        for (auto pos : path->poses)
+        pid.setPoint = pos.pose;
+        while (!pid.near && ros::ok())
         {
-            pid.setPoint = pos.pose;
-            std::cout << "segundo \n";
-            ros::Duration(1).sleep();
+            // std::cout << pid.error.getOrigin().length() << "\n";
         }
-        std::cout << "path done \n";
-        ros::shutdown();
-
-        // pid.setPoint = path->poses.at(0).pose;
-        // ros::waitForShutdown();
+        pid.near = false;
     }
+    std::cout << "path done \n";
+    ros::shutdown();
+
+    // pid.setPoint = path->poses.at(9).pose;
+    // ros::waitForShutdown();
 }
