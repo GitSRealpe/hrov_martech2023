@@ -133,12 +133,10 @@ public:
         auto r3(std::make_shared<ob::RealVectorStateSpace>(3));
         r3->setName("Position");
         ob::RealVectorBounds bounds(3);
-        bounds.setLow(0, -10);
+        bounds.setLow(0, -4);
         bounds.setHigh(0, 10);
-        bounds.setLow(1, -5);
+        bounds.setLow(1, -10);
         bounds.setHigh(1, 10);
-        // bounds.setLow(2, -5);
-        // bounds.setHigh(2, -0.5);
         bounds.setLow(2, 0.5);
         bounds.setHigh(2, 5);
         r3->setBounds(bounds);

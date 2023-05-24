@@ -79,7 +79,7 @@ public:
         pid_err(1, 0) = 0.5 * error.getOrigin().y();
         pid_err(2, 0) = 0.5 * error.getOrigin().z();
 
-        // integral for steady state error, pero
+        // integral for steady state error, but adds inestability
         dt = ros::Time::now() - prev_t;
         // integral += error.getOrigin().y() * dt.toSec();
         // pid_err(1, 1) = 0.1 * integral;
@@ -101,11 +101,12 @@ public:
         std::cout << "x action:" << std::clamp(pid_err.row(0).sum(), -0.1, 0.1) << "\n";
         std::cout << "y action:" << std::clamp(pid_err.row(1).sum(), -0.1, 0.1) << "\n";
         std::cout << "z action:" << std::clamp(pid_err.row(2).sum(), -0.1, 0.1) << "\n";
+        std::cout << "yaw action:" << std::clamp(0.7 * err_yaw, -0.5, 0.5);
         std::cout << "raw_yaw: " << err_yaw << "\n";
         vel_req.twist.linear.x = std::clamp(pid_err.row(0).sum(), -0.1, 0.1);
         vel_req.twist.linear.y = std::clamp(pid_err.row(1).sum(), -0.1, 0.1);
         vel_req.twist.linear.z = std::clamp(pid_err.row(2).sum(), -0.1, 0.1);
-        vel_req.twist.angular.z = std::clamp(0.7 * err_yaw, -0.05, 0.05);
+        vel_req.twist.angular.z = std::clamp(0.7 * err_yaw, -0.785, 0.785);
         vel_req.header.stamp = ros::Time::now();
 
         pub.publish(vel_req);
