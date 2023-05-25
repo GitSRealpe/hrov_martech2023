@@ -31,9 +31,16 @@
         <!-- Robot state publisher -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
 
+        <!-- <node pkg="hrov_martech2023" type="odom2tf" name="odom2tf" output="screen">
+            <param name="odom_topic" value="/girona1000/stonefish/odometry"/>
+            <param name="parent_frame" value="world_ned"/>
+            <param name="child_frame" value="girona1000/base_link"/>
+        </node> -->
+
         <!-- Run Simulator -->
         <arg name="simulation_data" value="$(find hrov_martech2023)/data"/>
-        <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/porto_do_castelo.scn"/>
+        <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/buoy.scn"/>
+        <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/porto_do_castelo.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/girona1000_tank.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/corridor.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/cylinder.scn"/> -->
