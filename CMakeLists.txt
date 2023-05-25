@@ -79,7 +79,7 @@ list(APPEND CATKIN_SOURCES
 
   )
 
-find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation)
+find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation actionlib)
 
 add_message_files(
   FILES
@@ -91,10 +91,15 @@ add_service_files(
   PlanGoal.srv
 )
 
+add_action_files(
+  DIRECTORY action 
+  FILES PID.action)
+
 generate_messages(
  DEPENDENCIES
  geometry_msgs
  std_msgs
+ actionlib_msgs
 )
 
 catkin_package(
@@ -140,7 +145,8 @@ add_script(planning2dubs_srv scripts)
 # add_script(planning2dubs_bench scripts)
 add_script(path_exec scripts/utils)
 add_script(path_exec2 scripts/utils)
-add_script(odom2tf scripts/utils)
+add_script(pid_action scripts/utils)
+# add_script(odom2tf scripts/utils)
 
 #############
 ## Install ##
