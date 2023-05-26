@@ -81,6 +81,8 @@ list(APPEND CATKIN_SOURCES
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation actionlib)
 
+catkin_python_setup()
+
 add_message_files(
   FILES
   PointArray.msg
@@ -157,8 +159,11 @@ add_script(pid_action scripts/utils)
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
+
+
 catkin_install_python(PROGRAMS
   scripts/clustering.py
   scripts/clustering_plot.py
+  scripts/utils/path_manager.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

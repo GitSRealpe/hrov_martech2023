@@ -6,6 +6,11 @@ from sklearn import mixture
 
 from hrov_martech2023.msg import PointArray
 from hrov_martech2023.srv import PlanGoal, PlanGoalRequest
+
+from utils.path_manager import Manager
+
+# from hrov_martech2023
+
 from visualization_msgs.msg import (
     Marker,
     MarkerArray,
@@ -19,7 +24,8 @@ from geometry_msgs.msg import Pose
 
 
 import tf2_ros
-from tf.transformations import euler_from_quaternion
+
+# from tf.transformations import euler_from_quaternion
 
 import roboticstoolbox as rb
 import spatialmath.base as sm
@@ -152,9 +158,6 @@ def menuCB(feedback: InteractiveMarkerFeedback):
     rospy.loginfo(feedback.menu_entry_id)
     # print(feedback.pose)
 
-    # m1 = sm.transl(
-    #     feedback.pose.position.x, feedback.pose.position.y, feedback.pose.position.z
-    # )
     q1 = np.array(
         [
             feedback.pose.orientation.x,
@@ -187,24 +190,9 @@ def menuCB(feedback: InteractiveMarkerFeedback):
     m = SE3(m1 * m2)
 
     req = PlanGoalRequest()
-    # req.position.x = feedback.pose.position.x + trans.transform.translation.y
-    # req.position.y = feedback.pose.position.y + trans.transform.translation.x
-    # req.position.z = feedback.pose.position.z + trans.transform.translation.z
-    # req.position.x = feedback.pose.position.x
-    # req.position.z = feedback.pose.position.z
-    # req.position.y = feedback.pose.position.y
     req.position.x = m.t[0]
     req.position.y = m.t[1]
     req.position.z = m.t[2]
-
-    # req.yaw = euler_from_quaternion(
-    #     [
-    #         feedback.pose.orientation.x,
-    #         feedback.pose.orientation.y,
-    #         feedback.pose.orientation.z,
-    #         feedback.pose.orientation.w,
-    #     ]
-    # )[2]
 
     req.yaw = m.rpy()[2]
     print(m.rpy())
@@ -245,10 +233,15 @@ def modCB(feedback: InteractiveMarkerFeedback):
     server.applyChanges()
 
 
+def moveCB(feedback: InteractiveMarkerFeedback):
+    print("sending moveing commando")
+    Manager().client()
+
+
 def initMenu():
     menu_handler.insert("Select as goal", callback=modCB)
     menu_handler.insert("Request Path", callback=menuCB)
-    menu_handler.insert("Move here", callback=menuCB)
+    menu_handler.insert("Move here", callback=moveCB)
 
 
 server = InteractiveMarkerServer("menu")
