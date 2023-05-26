@@ -28,7 +28,6 @@ public:
     geometry_msgs::Pose setPoint;
     std::shared_ptr<tf2_ros::TransformListener> tfListener;
     tf2_ros::Buffer tfBuffer;
-    // ros::NodeHandle nh_;
     tf2::Transform mat_curr;
     tf2::Transform mat_goal;
     tf2::Transform error;
@@ -93,7 +92,7 @@ public:
     void update(const ros::TimerEvent &event)
     {
 
-        std::cout << "controlando\n";
+        // std::cout << "controlando\n";
 
         tf2::fromMsg(setPoint, mat_goal);
         t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
@@ -131,11 +130,11 @@ public:
 
         prev_t = ros::Time::now();
 
-        std::cout << "x action:" << std::clamp(pid_err.row(0).sum(), -0.1, 0.1) << "\n";
-        std::cout << "y action:" << std::clamp(pid_err.row(1).sum(), -0.1, 0.1) << "\n";
-        std::cout << "z action:" << std::clamp(pid_err.row(2).sum(), -0.1, 0.1) << "\n";
-        std::cout << "yaw action:" << std::clamp(0.7 * err_yaw, -0.5, 0.5) << "\n";
-        std::cout << "raw_yaw: " << err_yaw << "\n";
+        // std::cout << "x action:" << std::clamp(pid_err.row(0).sum(), -0.1, 0.1) << "\n";
+        // std::cout << "y action:" << std::clamp(pid_err.row(1).sum(), -0.1, 0.1) << "\n";
+        // std::cout << "z action:" << std::clamp(pid_err.row(2).sum(), -0.1, 0.1) << "\n";
+        // std::cout << "yaw action:" << std::clamp(0.7 * err_yaw, -0.5, 0.5) << "\n";
+        // std::cout << "raw_yaw: " << err_yaw << "\n";
         vel_req.twist.linear.x = std::clamp(pid_err.row(0).sum(), -0.1, 0.1);
         vel_req.twist.linear.y = std::clamp(pid_err.row(1).sum(), -0.1, 0.1);
         vel_req.twist.linear.z = std::clamp(pid_err.row(2).sum(), -0.1, 0.1);
@@ -144,7 +143,7 @@ public:
 
         pub.publish(vel_req);
 
-                // near = error.getOrigin().length() < 0.2;
+        // near = error.getOrigin().length() < 0.2;
     }
 };
 
@@ -155,28 +154,4 @@ int main(int argc, char **argv)
 
     PID pid(ros::this_node::getName());
     ros::spin();
-
-    // ros::NodeHandle nh;
-    // nav_msgs::PathConstPtr path = ros::topic::waitForMessage<nav_msgs::Path>("/planner/path_result");
-
-    // PID pid(nh);
-    // ros::Timer timer = nh.createTimer(ros::Rate(10), &PID::update, &pid);
-
-    // ros::AsyncSpinner spinner(2);
-    // spinner.start();
-
-    // for (auto pos : path->poses)
-    // {
-    //     pid.setPoint = pos.pose;
-    //     while (!pid.near && ros::ok())
-    //     {
-    //         // std::cout << pid.error.getOrigin().length() << "\n";
-    //     }
-    //     pid.near = false;
-    // }
-    // std::cout << "path done \n";
-    // ros::shutdown();
-
-    // pid.setPoint = path->poses.at(9).pose;
-    // ros::waitForShutdown();
 }
