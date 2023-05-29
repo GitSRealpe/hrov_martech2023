@@ -78,16 +78,25 @@ public:
         // KLSDALSDLASDKJL
         // accept the new goal
         setPoint = as_.acceptNewGoal()->goal;
+        as_.isPreemptRequested();
         timer_.start();
     }
 
     void preemptCB()
     {
-        ROS_INFO("%s: Preempted", action_name_.c_str());
+
         // set the action state to preempted
         timer_.stop();
-        as_.setPreempted();
-    }
+        if (as_.isNewGoalAvailable())
+        {
+            ROS_INFO("%s: Following new goal", action_name_.c_str());
+        }
+        else
+        {
+            ROS_INFO("%s: Preempted", action_name_.c_str());
+            as_.setPreempted();
+        }
+        }
 
     void update(const ros::TimerEvent &event)
     {
