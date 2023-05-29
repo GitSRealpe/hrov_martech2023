@@ -24,6 +24,7 @@
 #include <ompl/geometric/planners/rrt/RRTstar.h>
 #include <ompl/geometric/planners/rrt/LazyRRT.h>
 #include <ompl/geometric/planners/prm/LazyPRM.h>
+#include <ompl/geometric/PathSimplifier.h>
 #include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 
 // FCL STUFF
@@ -103,6 +104,8 @@ private:
     ob::StateSpacePtr navSpace_;
     ompl::base::ProblemDefinitionPtr pdef_;
     ob::PlannerPtr planner_;
+    og::PathSimplifierPtr simply;
+
     std::shared_ptr<fcl::CollisionObjectf> tree_obj_;
 
     rviz_visual_tools::RvizVisualToolsPtr visual_tools_;
@@ -154,6 +157,8 @@ public:
         si->setup();
         si->printSettings();
 
+        simply = std::make_shared<og::PathSimplifier>(si);
+
         // create a problem instance
         pdef_ = std::make_shared<ob::ProblemDefinition>(si);
         // create a planner for the defined space
@@ -164,7 +169,7 @@ public:
         // set the problem we are trying to solve for the planner_
         planner_->setProblemDefinition(pdef_);
         // perform setup steps for the planner_
-        planner_->params().setParam("range", "2");
+        planner_->params().setParam("range", "1");
         planner_->setup();
 
         planner_->printSettings(std::cout);
@@ -201,7 +206,7 @@ public:
         pdef_->setStartAndGoalStates(current, goal);
         // genreal form of setting a goal
         // pdef_->setGoal()
-        pdef_->fixInvalidInputStates(0, 2, 100);
+        pdef_->fixInvalidInputStates(0, 1, 100);
         pdef_->print();
 
         // attempt to solve the problem
@@ -211,6 +216,9 @@ public:
 
             og::PathGeometric pathres = *pdef_->getSolutionPath()->as<og::PathGeometric>();
             std::cout << pathres.getStateCount() << "\n";
+            simply->simplify(pathres, 5);
+            std::cout << pathres.getStateCount() << "\n";
+
             pathres.interpolate(pathres.getStateCount() * 2);
 
             EigenSTL::vector_Vector3d puntos;

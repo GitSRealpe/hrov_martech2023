@@ -108,8 +108,9 @@ private:
 
     ob::StateSpacePtr navSpace_;
     ompl::base::ProblemDefinitionPtr pdef_;
-    // std::shared_ptr<og::RRT> planner_;
     ob::PlannerPtr planner_;
+    og::PathSimplifierPtr simply;
+
     std::shared_ptr<fcl::CollisionObjectf> tree_obj_;
 
     rviz_visual_tools::RvizVisualToolsPtr visual_tools_;
@@ -146,6 +147,8 @@ public:
         si->setStateValidityChecker(ob::StateValidityCheckerPtr(new Validator(si, tree_obj_)));
         si->setup();
         si->printSettings();
+
+        simply = std::make_shared<og::PathSimplifier>(si);
 
         // create a problem instance
         pdef_ = std::make_shared<ob::ProblemDefinition>(si);
@@ -192,6 +195,7 @@ public:
         pdef_->setStartAndGoalStates(current, goal);
         // genreal form of setting a goal
         // pdef_->setGoal()
+        // pdef_->getGoal()->;
         pdef_->fixInvalidInputStates(0, 2, 100);
         pdef_->print();
 
@@ -207,8 +211,14 @@ public:
 
             og::PathGeometric pathres = *pdef_->getSolutionPath()->as<og::PathGeometric>();
             std::cout << pathres.getStateCount() << "\n";
+            simply->simplify(pathres, 5);
+            std::cout << pathres.getStateCount() << "\n";
             pathres.interpolate(pathres.getStateCount() * 2);
-            // pathr.printAsMatrix(std::cout);
+            std::ofstream myfile;
+            myfile.open("pathdubs.txt");
+            pathres.printAsMatrix(myfile);
+            myfile.close();
+            // pathres.printAsMatrix(std::cout);
 
             EigenSTL::vector_Vector3d puntos;
             Eigen::Isometry3d punto;
