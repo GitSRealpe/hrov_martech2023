@@ -9,7 +9,7 @@
 #include <geometry_msgs/Point.h>
 #include <hrov_martech2023/PointArray.h>
 
-#define DEPTH 15
+#define DEPTH 14
 
 ros::Publisher marker_pub;
 ros::Publisher unk_pub;
