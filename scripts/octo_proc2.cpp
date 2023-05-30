@@ -51,7 +51,7 @@ void getUnks(std::shared_ptr<octomap::OcTree> tree)
                         if (tree->search(pt2, DEPTH) == NULL)
                         {
                             std::cout << "Node center: " << pt2 << "\n";
-                            std::cout << "al lado en x Unknown\n";
+                            std::cout << "al lado Unknown\n";
                             geometry_msgs::Point pt_msgs;
                             pt_msgs.x = pt2.x();
                             pt_msgs.y = pt2.y();

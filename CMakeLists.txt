@@ -164,6 +164,6 @@ add_script(pid_action scripts/utils)
 catkin_install_python(PROGRAMS
   scripts/clustering.py
   scripts/clustering_plot.py
-  scripts/utils/path_manager.py
+  # scripts/utils/path_manager.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

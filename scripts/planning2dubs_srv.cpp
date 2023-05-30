@@ -213,7 +213,7 @@ public:
             std::cout << pathres.getStateCount() << "\n";
             simply->simplify(pathres, 5);
             std::cout << pathres.getStateCount() << "\n";
-            pathres.interpolate(pathres.getStateCount() * 2);
+            pathres.interpolate(pathres.getStateCount() * 10);
             std::ofstream myfile;
             myfile.open("pathdubs.txt");
             pathres.printAsMatrix(myfile);

@@ -86,7 +86,7 @@ public:
     {
 
         // set the action state to preempted
-        timer_.stop();
+
         if (as_.isNewGoalAvailable())
         {
             ROS_INFO("%s: Following new goal", action_name_.c_str());
@@ -95,8 +95,9 @@ public:
         {
             ROS_INFO("%s: Preempted", action_name_.c_str());
             as_.setPreempted();
+            timer_.stop();
         }
-        }
+    }
 
     void update(const ros::TimerEvent &event)
     {
