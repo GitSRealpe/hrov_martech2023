@@ -7,7 +7,7 @@ from sklearn import mixture
 from hrov_martech2023.msg import PointArray
 from hrov_martech2023.srv import PlanGoal, PlanGoalRequest
 
-from utils.path_manager import Manager
+from hrov_utils.path_manager import Manager
 
 # from hrov_martech2023
 
@@ -233,9 +233,12 @@ def modCB(feedback: InteractiveMarkerFeedback):
     server.applyChanges()
 
 
+man = Manager()
+
+
 def moveCB(feedback: InteractiveMarkerFeedback):
     print("sending moveing commando")
-    Manager().client()
+    man.init()
 
 
 def initMenu():
