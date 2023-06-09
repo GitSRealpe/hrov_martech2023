@@ -6,10 +6,9 @@ from sklearn import mixture
 
 from hrov_martech2023.msg import PointArray
 from hrov_martech2023.srv import PlanGoal, PlanGoalRequest
-
 from hrov_utils.path_manager import Manager
 
-# from hrov_martech2023
+from std_msgs.msg import Empty
 
 from visualization_msgs.msg import (
     Marker,
@@ -22,12 +21,8 @@ from interactive_markers.menu_handler import *
 
 from geometry_msgs.msg import Pose
 
-
 import tf2_ros
 
-# from tf.transformations import euler_from_quaternion
-
-import roboticstoolbox as rb
 import spatialmath.base as sm
 from spatialmath import *
 
@@ -252,59 +247,73 @@ initMenu()
 
 
 marker_pub = rospy.Publisher("/kcentroids", MarkerArray, queue_size=0)
-pt_array_msg = rospy.wait_for_message("/octo/unk_cells", PointArray)
-
-lista = []
-for pt in pt_array_msg.puntos:
-    lista.append([pt.x, pt.y, pt.z])
-
-X = np.around(np.array(lista), 1)
-
-dpgmm = mixture.BayesianGaussianMixture(
-    n_components=10,
-    covariance_type="full",
-    # mean_precision_prior=2,
-    # tol=1e-4,
-    # tol=1
-).fit(X)
-
-# print(dpgmm.means_)
-# print(dpgmm.mean_precision_)
-
-# print(dpgmm.weights_)
-index = np.where(dpgmm.weights_ < 1e-02)
-dpgmm.means_ = np.delete(dpgmm.means_, index, axis=0)
-# print(dpgmm.means_)
-dpgmm.covariances_ = np.delete(dpgmm.covariances_, index, axis=0)
-# print(dpgmm.covariances_)
-
-marker_array = MarkerArray()
-marker = Marker()
-marker.header.frame_id = "world_ned"
-marker.ns = "centroids"
-marker.type = Marker.SPHERE
-marker.action = Marker.ADD
-
-marker.color.r = 1
-marker.color.g = 0.796
-marker.color.b = 0.0
-marker.color.a = 1
-# marker.pose.orientation.w = 1
-
-print("\nDibujando los esferoides\n")
 
 
-for idx, (mean, covar) in enumerate(zip(dpgmm.means_, dpgmm.covariances_)):
-    print(idx)
+def clustering():
+    pt_array_msg = rospy.wait_for_message("/octo/unk_cells", PointArray)
 
-    makeMenuMarker("marker" + str(idx), mean)
-    menu_handler.apply(server, "marker" + str(idx))
+    lista = []
+    for pt in pt_array_msg.puntos:
+        lista.append([pt.x, pt.y, pt.z])
 
-    # break
+    X = np.around(np.array(lista), 1)
 
-server.applyChanges()
+    dpgmm = mixture.BayesianGaussianMixture(
+        n_components=10,
+        covariance_type="full",
+        # mean_precision_prior=2,
+        # tol=1e-4,
+        # tol=1
+    ).fit(X)
+
+    # print(dpgmm.means_)
+    # print(dpgmm.mean_precision_)
+
+    # print(dpgmm.weights_)
+    index = np.where(dpgmm.weights_ < 1e-02)
+    dpgmm.means_ = np.delete(dpgmm.means_, index, axis=0)
+    # print(dpgmm.means_)
+    dpgmm.covariances_ = np.delete(dpgmm.covariances_, index, axis=0)
+    # print(dpgmm.covariances_)
+
+    # marker_array = MarkerArray()
+    # marker = Marker()
+    # marker.header.frame_id = "world_ned"
+    # marker.ns = "centroids"
+    # marker.type = Marker.SPHERE
+    # marker.action = Marker.ADD
+
+    # marker.color.r = 1
+    # marker.color.g = 0.796
+    # marker.color.b = 0.0
+    # marker.color.a = 1
+    # marker.pose.orientation.w = 1
+
+    print("\nDibujando los esferoides\n")
+
+    server.clear()
+    server.applyChanges()
+    for idx, (mean, covar) in enumerate(zip(dpgmm.means_, dpgmm.covariances_)):
+        print(idx)
+
+        makeMenuMarker("marker" + str(idx), mean)
+        menu_handler.apply(server, "marker" + str(idx))
+
+        # break
+
+    server.applyChanges()
+
 
 # marker_pub.publish(marker_array)
+clustering()
+
+
+def input_callback(data):
+    print("imput gotten")
+    clustering()
+
+
+rospy.Subscriber("/cluster_input", Empty, input_callback)
 
 
 rospy.spin()
