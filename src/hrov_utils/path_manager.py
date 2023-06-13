@@ -12,6 +12,7 @@ from hrov_martech2023.msg import PIDAction, PIDActionGoal, PIDActionFeedback
 
 class Manager:
     error = 0
+    done = False
     path: Path
     timer: rospy.Timer
     client = actionlib.SimpleActionClient("path_execution", PIDAction)
@@ -25,6 +26,7 @@ class Manager:
                 self.client.send_goal(req, feedback_cb=self.feedbackCB)
                 self.error = 10
         else:
+            self.done = True
             self.timer.shutdown()
 
         if self.client.get_state() == GoalStatus.PREEMPTED:

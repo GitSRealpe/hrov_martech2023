@@ -1,7 +1,8 @@
 import rospy
 import numpy as np
 import copy
-from sklearn.cluster import KMeans
+
+# from sklearn.cluster import KMeans
 from sklearn import mixture
 
 from hrov_martech2023.msg import PointArray
@@ -19,7 +20,7 @@ from visualization_msgs.msg import (
 from interactive_markers.interactive_marker_server import *
 from interactive_markers.menu_handler import *
 
-from geometry_msgs.msg import Pose
+# from geometry_msgs.msg import Pose
 
 import tf2_ros
 
@@ -62,6 +63,7 @@ def makeMenuMarker(name, pos):
     int_marker.scale = 1
     int_marker.name = name
 
+    # main sphere
     control = InteractiveMarkerControl()
     control.interaction_mode = InteractiveMarkerControl.BUTTON
     control.always_visible = True
@@ -76,7 +78,12 @@ def makeMenuMarker(name, pos):
     marker.color.b = 0.0
     marker.color.a = 1
     control.markers.append(marker)
+    int_marker.controls.append(copy.deepcopy(control))
 
+    # lil sphere
+    control = InteractiveMarkerControl()
+    control.interaction_mode = InteractiveMarkerControl.NONE
+    control.always_visible = True
     marker = Marker()
     marker.type = Marker.SPHERE
     marker.pose.position.x = trans.transform.translation.y
@@ -101,6 +108,24 @@ def makeMenuMarker(name, pos):
     marker.scale.z = 0.1
     marker.color.r = 0
     marker.color.g = 0.796
+    marker.color.b = 1
+    marker.color.a = 0
+    control.markers.append(marker)
+
+    marker = Marker()
+    marker.type = Marker.MESH_RESOURCE
+    marker.mesh_resource = "package://girona1000_description/meshes/girona1000.dae"
+    marker.pose.position.x = -0.539 + 0.7
+    marker.pose.position.z = -0.75 + 0.4
+    # marker.pose.orientation.w = 0.707
+    # marker.pose.orientation.x = -0.707
+    marker.pose.orientation.y = -0.707
+    marker.pose.orientation.z = 0.707
+    marker.scale.x = 1
+    marker.scale.y = 1
+    marker.scale.z = 1
+    marker.color.r = 1
+    marker.color.g = 1
     marker.color.b = 1
     marker.color.a = 0
     control.markers.append(marker)
@@ -203,13 +228,14 @@ def modCB(feedback: InteractiveMarkerFeedback):
     im = server.get("marker0")
     i = 0
     while im != None:
+        # alpha de los markers helpers (arrow, lil sphere, girona ghost)
+        for m in range(0, len(im.controls[1].markers)):
+            im.controls[1].markers[m].color.a = 0
         im.controls[0].markers[0].color.b = 0
-        im.controls[0].markers[1].color.a = 0
-        im.controls[0].markers[2].color.a = 0
-        im.controls[1].interaction_mode = InteractiveMarkerControl.NONE
         im.controls[2].interaction_mode = InteractiveMarkerControl.NONE
         im.controls[3].interaction_mode = InteractiveMarkerControl.NONE
         im.controls[4].interaction_mode = InteractiveMarkerControl.NONE
+        im.controls[5].interaction_mode = InteractiveMarkerControl.NONE
         server.insert(im)
         i = i + 1
         im = server.get("marker" + str(i))
@@ -217,18 +243,27 @@ def modCB(feedback: InteractiveMarkerFeedback):
     server.applyChanges()
 
     im = server.get(feedback.marker_name)
+    for m in range(0, len(im.controls[1].markers)):
+        im.controls[1].markers[m].color.a = 0.5
     im.controls[0].markers[0].color.b = 1
-    im.controls[0].markers[1].color.a = 1
-    im.controls[0].markers[2].color.a = 1
-    im.controls[1].interaction_mode = InteractiveMarkerControl.MOVE_AXIS
     im.controls[2].interaction_mode = InteractiveMarkerControl.MOVE_AXIS
     im.controls[3].interaction_mode = InteractiveMarkerControl.MOVE_AXIS
-    im.controls[4].interaction_mode = InteractiveMarkerControl.ROTATE_AXIS
+    im.controls[4].interaction_mode = InteractiveMarkerControl.MOVE_AXIS
+    im.controls[5].interaction_mode = InteractiveMarkerControl.ROTATE_AXIS
     server.insert(im)
     server.applyChanges()
 
 
 man = Manager()
+
+
+def doCluster(event):
+    if man.done:
+        clustering()
+        man.done = False
+
+
+timer = rospy.Timer(rospy.Duration(1), doCluster)
 
 
 def moveCB(feedback: InteractiveMarkerFeedback):
@@ -259,7 +294,7 @@ def clustering():
     X = np.around(np.array(lista), 1)
 
     dpgmm = mixture.BayesianGaussianMixture(
-        n_components=10,
+        n_components=7,
         covariance_type="full",
         # mean_precision_prior=2,
         # tol=1e-4,
@@ -275,19 +310,6 @@ def clustering():
     # print(dpgmm.means_)
     dpgmm.covariances_ = np.delete(dpgmm.covariances_, index, axis=0)
     # print(dpgmm.covariances_)
-
-    # marker_array = MarkerArray()
-    # marker = Marker()
-    # marker.header.frame_id = "world_ned"
-    # marker.ns = "centroids"
-    # marker.type = Marker.SPHERE
-    # marker.action = Marker.ADD
-
-    # marker.color.r = 1
-    # marker.color.g = 0.796
-    # marker.color.b = 0.0
-    # marker.color.a = 1
-    # marker.pose.orientation.w = 1
 
     print("\nDibujando los esferoides\n")
 
@@ -314,6 +336,5 @@ def input_callback(data):
 
 
 rospy.Subscriber("/cluster_input", Empty, input_callback)
-
 
 rospy.spin()
