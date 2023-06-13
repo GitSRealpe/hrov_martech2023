@@ -25,6 +25,10 @@
 #include <ompl/geometric/SimpleSetup.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
+#include <ompl/geometric/planners/est/EST.h>
+#include <ompl/geometric/planners/sbl/SBL.h>
+#include <ompl/geometric/planners/prm/PRM.h>
+#include <ompl/geometric/planners/prm/LazyPRM.h>
 
 // FCL STUFF
 // #include <fcl/fcl.h>
@@ -51,7 +55,7 @@ public:
     Validator(const ob::SpaceInformationPtr &si, std::shared_ptr<fcl::CollisionObjectf> tree) : ob::StateValidityChecker(si) //, tree_obj_(tree)
     {
         std::cout << "validator initializing\n";
-        auv_box_ = std::shared_ptr<fcl::Boxf>(new fcl::Boxf(1.8, 1.2, 1.3));
+        auv_box_ = std::shared_ptr<fcl::Boxf>(new fcl::Boxf(1.7, 1.2, 1.3));
         auv_co_.reset(new fcl::CollisionObjectf(auv_box_));
         tree_obj_ = tree;
     }
@@ -124,18 +128,18 @@ public:
         std::cout << nh_.getNamespace() << "\n";
         pathPub = nh_.advertise<nav_msgs::Path>("planner/path_result", 1, true);
 
-        auto dubss(std::make_shared<ob::DubinsStateSpace>(0.5, true));
+        auto dubss(std::make_shared<ob::DubinsStateSpace>(0.7, false));
         // auto dubss(std::make_shared<ob::ReedsSheppStateSpace>(1.0));
         dubss->setName("Dubins");
         ob::RealVectorBounds bounds(2);
-        bounds.setLow(-10);
-        bounds.setHigh(10);
+        bounds.setLow(-100);
+        bounds.setHigh(100);
         dubss->setBounds(bounds);
         auto zss(std::make_shared<ob::RealVectorStateSpace>(1));
         zss->setName("Z");
         ob::RealVectorBounds bounds2(1);
         bounds2.setLow(0.5);
-        bounds2.setHigh(5);
+        bounds2.setHigh(20);
         zss->setBounds(bounds2);
         navSpace_ = dubss + zss;
         navSpace_->setName("navSpace");
@@ -196,12 +200,12 @@ public:
         // genreal form of setting a goal
         // pdef_->setGoal()
         // pdef_->getGoal()->;
-        pdef_->fixInvalidInputStates(0, 2, 100);
+        pdef_->fixInvalidInputStates(1, 2, 100);
         pdef_->print();
 
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
         // attempt to solve the problem
-        ob::PlannerStatus status = planner_->ob::Planner::solve(30.0);
+        ob::PlannerStatus status = planner_->ob::Planner::solve(20.0);
         std::cout << status << "\n";
         if (status)
         {
@@ -213,11 +217,11 @@ public:
             std::cout << pathres.getStateCount() << "\n";
             simply->simplify(pathres, 5);
             std::cout << pathres.getStateCount() << "\n";
-            pathres.interpolate(pathres.getStateCount() * 10);
-            std::ofstream myfile;
-            myfile.open("pathdubs.txt");
-            pathres.printAsMatrix(myfile);
-            myfile.close();
+            pathres.interpolate(pathres.getStateCount() * 8);
+            // std::ofstream myfile;
+            // myfile.open("pathdubs.txt");
+            // pathres.printAsMatrix(myfile);
+            // myfile.close();
             // pathres.printAsMatrix(std::cout);
 
             EigenSTL::vector_Vector3d puntos;
