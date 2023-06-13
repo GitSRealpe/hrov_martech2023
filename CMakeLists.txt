@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH
   "${CMAKE_MODULE_PATH}"
   "${CMAKE_CURRENT_SOURCE_DIR}")
-
+  
 include(macros)
 
 ## Find catkin macros and libraries
@@ -140,10 +140,12 @@ list(APPEND LIBRARIES
 add_script(laser2ptcloud scripts/utils)
 add_script(octo_proc1 scripts)
 add_script(octo_proc2 scripts)
+add_script(octo_proc3 scripts)
 # add_script(planning2 scripts)
 add_script(planning2_srv scripts)
 # add_script(planning2dubs scripts)
 add_script(planning2dubs_srv scripts)
+add_script(planning3dubs_srv scripts)
 # add_script(planning2dubs_bench scripts)
 add_script(path_exec scripts/utils)
 add_script(path_exec2 scripts/utils)
