@@ -150,7 +150,7 @@ add_script(planning3dubs_srv scripts)
 add_script(path_exec scripts/utils)
 add_script(path_exec2 scripts/utils)
 add_script(pid_action scripts/utils)
-# add_script(odom2tf scripts/utils)
+add_script(odom2tf scripts/utils)
 
 #############
 ## Install ##

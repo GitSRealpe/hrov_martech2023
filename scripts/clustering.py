@@ -114,7 +114,9 @@ def makeMenuMarker(name, pos):
 
     marker = Marker()
     marker.type = Marker.MESH_RESOURCE
-    marker.mesh_resource = "package://girona1000_description/meshes/girona1000.dae"
+    marker.mesh_resource = (
+        "package://girona1000_description/resources/meshes/girona1000.dae"
+    )
     marker.pose.position.x = -0.539 + 0.7
     marker.pose.position.z = -0.75 + 0.4
     # marker.pose.orientation.w = 0.707

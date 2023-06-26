@@ -31,12 +31,6 @@
         <!-- Robot state publisher -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
 
-        <!-- <node pkg="hrov_martech2023" type="odom2tf" name="odom2tf" output="screen">
-            <param name="odom_topic" value="/girona1000/stonefish/odometry"/>
-            <param name="parent_frame" value="world_ned"/>
-            <param name="child_frame" value="girona1000/base_link"/>
-        </node> -->
-
         <!-- Run Simulator -->
         <arg name="simulation_data" value="$(find hrov_martech2023)/data"/>
         <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/buoy.scn"/>
@@ -51,7 +45,23 @@
         <arg name="graphics_quality" value="low"/>
         <node name="stonefish_simulator" pkg="stonefish_ros" type="parsed_simulator" args="$(arg simulation_data) $(arg scenario_description) $(arg simulation_rate) $(arg graphics_resolution) $(arg graphics_quality)"/>
 
+        <node pkg="hrov_martech2023" type="odom2tf" name="odom2tf" output="screen">
+            <param name="odom_topic" value="/girona1000/stonefish/odometry"/>
+            <param name="parent_frame" value="world_ned"/>
+            <param name="child_frame" value="girona1000/base_link"/>
+        </node>
+
     </group>
+
+    <!-- Stonefish/COLA2 message translator -->
+    <node name="translator" pkg="cola2_stonefish" type="cola2_stonefish_node">
+        <remap from="/translator/stonefish_dvl" to="/$(arg robot_name)/navigator/dvl_sim"/>
+        <remap from="/translator/cola2_dvl" to="/$(arg robot_name)/navigator/dvl"/>
+        <remap from="/translator/stonefish_thruster_setpoints" to="/$(arg robot_name)/controller/thruster_setpoints_sim"/>
+        <remap from="/translator/cola2_thruster_setpoints" to="/$(arg robot_name)/controller/thruster_setpoints"/>
+        <remap from="/translator/stonefish_navigation" to="/$(arg robot_name)/navigator/navigation_sim"/>
+        <remap from="/translator/cola2_navigation" to="/$(arg robot_name)/navigator/navigation"/>
+    </node>
 
     <!-- Run RVIZ -->
     <group if="$(arg enable_rviz)">

@@ -274,7 +274,7 @@
 		<sensor name="pressure" type="pressure" rate="5.0">
 			<link name="Vehicle"/>
 			<origin rpy="0.0 0.0 0.0" xyz="-0.4561 0.35 -0.2073"/>
-			<noise pressure="5.0"/>
+			<noise pressure="0.0"/>
 			<ros_publisher topic="/$(arg robot_name)/navigator/pressure"/>
 		</sensor>
 
@@ -283,23 +283,22 @@
 			<origin rpy="0.0 0.0 3.14159" xyz="-0.655 0.0 0.65"/>
 			<specs beam_angle="25.0" beam_positive_z="true"/>
 			<range velocity="9.0 9.0 9.0" altitude_min="0.5" altitude_max="75.0"/>
-			<noise velocity="0.0015" altitude="0.001"/>
+			<noise velocity="0.000" altitude="0.000"/>
 			<visual filename="girona1000/dvl.obj" scale="1.0" look="girona1000_dvl"/>
-			<ros_publisher topic="/$(arg robot_name)/navigator/dvl"
-				altitude_topic="/$(arg robot_name)/navigator/altitude"/>
+			<ros_publisher topic="/$(arg robot_name)/navigator/dvl_sim" altitude_topic="/$(arg robot_name)/navigator/altitude"/>
 		</sensor>
 
-		<sensor name="imu_filter" type="imu" rate="20.0">
+		<!-- <sensor name="imu_filter" type="imu" rate="20.0">
 			<link name="Vehicle"/>
 			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
 			<noise angle="0.000001745" angular_velocity="0.00001745"/>
 			<ros_publisher topic="/$(arg robot_name)/navigator/imu"/>
-		</sensor>
+		</sensor> -->
 
 		<sensor name="gps" type="gps" rate="1.0">
 			<link name="Vehicle"/>
 			<origin rpy="0.0 0.0 0.0" xyz="-0.455 -0.35 -0.54"/>
-			<noise ned_position="0.25"/>
+			<noise ned_position="0.0"/>
 			<ros_publisher topic="/$(arg robot_name)/navigator/gps"/>
 		</sensor>
 
@@ -307,11 +306,9 @@
 			<link name="Vehicle"/>
 			<origin rpy="3.14159 0.0 3.14159" xyz="0.249 0.377 -0.070"/>
 			<output_frame rpy="3.14159 0.0 3.1459" xyz="0.249 -0.377 -0.284"/>
-			<noise angular_velocity="0.00001745" linear_acceleration="0.0005"/>
+			<noise angular_velocity="0.0" linear_acceleration="0.0"/>
 			<external_sensors dvl="dvl" gps="gps" pressure="pressure"/>
-			<!-- <ros_publisher topic="/$(arg robot_name)/navigator/navigation"
-				odometry_topic="/$(arg robot_name)/navigator/odometry"/> -->
-			<ros_publisher topic="/$(arg robot_name)/navigator/navigation"/>
+			<ros_publisher topic="/$(arg robot_name)/navigator/navigation_sim" odometry_topic="/$(arg robot_name)/navigator/odometry"/>
 		</sensor>
 
 		<sensor name="camara" type="camera" rate="10.0">
@@ -408,7 +405,7 @@
 
 		<world_transform rpy="0.0 0.0 $(arg start_yaw)" xyz="$(arg start_position)"/>
 
-		<ros_subscriber thrusters="/$(arg robot_name)/controller/thruster_setpoints"/>
+		<ros_subscriber thrusters="/$(arg robot_name)/controller/thruster_setpoints_sim"/>
 		<ros_publisher thrusters="/$(arg robot_name)/controller/thruster_states"/>
 	</robot>
 </scenario>

@@ -6,8 +6,7 @@
     <arg name="enable_gui" default="true"/>
 
     <!-- Config folder -->
-    <!-- <arg name="config_folder" value="$(find cola2_girona1000)/sim_config"/> -->
-    <arg name="config_folder" value="$(find hrov_martech2023)/config/cola2config"/>
+    <arg name="config_folder" value="$(find cola2_girona1000)/sim_config"/>
 
     <!-- Common configs -->
     <rosparam command="load" ns="captain" file="$(arg config_folder)/captain.yaml"/>
@@ -31,7 +30,7 @@
         <remap from="/diagnostics_agg" to="/$(arg robot_name)/diagnostics_agg"/>
         <remap from="/diagnostics_toplevel_state" to="/$(arg robot_name)/diagnostics_toplevel_state"/>
     </node>
-    <!-- <node name="safe_depth_altitude" pkg="cola2_safety" type="safe_depth_altitude_node" output="screen"/> -->
+    <node name="safe_depth_altitude" pkg="cola2_safety" type="safe_depth_altitude_node" output="screen"/>
     <!-- <node name="safety_supervisor" pkg="cola2_safety" type="safety_supervisor_node" output="screen"/> -->
     <!-- <node name="safety_supervisor_checker" pkg="cola2_safety" type="safety_supervisor_checker_node" output="screen"/> -->
     <node name="virtual_cage" pkg="cola2_safety" type="virtual_cage_node" output="screen"/>
@@ -41,7 +40,7 @@
     <node name="sim_internal_sensors" pkg="cola2_sim" type="sim_internal_sensors_node" output="screen"/>
 
     <!-- Navigation -->
-    <node name="navigator" pkg="cola2_nav" type="navigator_node" output="log"/>
+    <!-- <node name="navigator" pkg="cola2_nav" type="navigator_node" output="screen"/> -->
 
     <!-- Control stack -->
     <node name="captain" pkg="cola2_control" type="captain_node" output="screen">
