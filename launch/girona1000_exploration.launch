@@ -39,14 +39,15 @@
 
         <!-- Run Simulator -->
         <arg name="simulation_data" value="$(find hrov_martech2023)/data"/>
-        <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/buoy.scn"/> -->
-        <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/ship.scn"/>
+        <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/buoy.scn"/>
+        <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/ship.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/porto_do_castelo.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/girona1000_tank.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/corridor.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/cylinder.scn"/> -->
         <arg name="simulation_rate" value="100.0"/>
         <arg name="graphics_resolution" value="1440 900"/>
+        <!-- <arg name="graphics_resolution" value="1920 1080"/> -->
         <arg name="graphics_quality" value="low"/>
         <node name="stonefish_simulator" pkg="stonefish_ros" type="parsed_simulator" args="$(arg simulation_data) $(arg scenario_description) $(arg simulation_rate) $(arg graphics_resolution) $(arg graphics_quality)"/>
 

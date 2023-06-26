@@ -70,9 +70,9 @@ def makeMenuMarker(name, pos):
 
     marker = Marker()
     marker.type = Marker.SPHERE
-    marker.scale.x = 0.5
-    marker.scale.y = 0.5
-    marker.scale.z = 0.5
+    marker.scale.x = 0.4
+    marker.scale.y = 0.4
+    marker.scale.z = 0.4
     marker.color.r = 1
     marker.color.g = 0.796
     marker.color.b = 0.0
@@ -134,7 +134,8 @@ def makeMenuMarker(name, pos):
 
     control = InteractiveMarkerControl()
     control.name = "move_x"
-    control.orientation_mode = InteractiveMarkerControl.FIXED
+    # control.orientation_mode = InteractiveMarkerControl.FIXED
+    control.orientation_mode = InteractiveMarkerControl.INHERIT
     control.interaction_mode = InteractiveMarkerControl.NONE
     int_marker.controls.append(copy.deepcopy(control))
 
@@ -144,7 +145,8 @@ def makeMenuMarker(name, pos):
     control.orientation.y = 0
     control.orientation.z = 1
     control.name = "move_y"
-    control.orientation_mode = InteractiveMarkerControl.FIXED
+    # control.orientation_mode = InteractiveMarkerControl.FIXED
+    control.orientation_mode = InteractiveMarkerControl.INHERIT
     control.interaction_mode = InteractiveMarkerControl.NONE
     int_marker.controls.append(copy.deepcopy(control))
 
@@ -154,7 +156,8 @@ def makeMenuMarker(name, pos):
     control.orientation.y = 1
     control.orientation.z = 0
     control.name = "move_z"
-    control.orientation_mode = InteractiveMarkerControl.FIXED
+    # control.orientation_mode = InteractiveMarkerControl.FIXED
+    control.orientation_mode = InteractiveMarkerControl.INHERIT
     control.interaction_mode = InteractiveMarkerControl.NONE
     int_marker.controls.append(copy.deepcopy(control))
 
@@ -259,6 +262,7 @@ man = Manager()
 
 def doCluster(event):
     if man.done:
+        rospy.sleep(3)
         clustering()
         man.done = False
 
