@@ -46,8 +46,8 @@
         <!-- <param name="latch" value="false"/> -->
         <!-- <param name="publish_free_space" value="true"/> -->
         <!-- <param name="sensor_model/max_range" value="5.0"/> -->
-        <param name="color/b" value="1"/>
-        <param name="height_map" value="false"/>
+        <!-- <param name="color/b" value="1"/> -->
+        <!-- <param name="height_map" value="false"/> -->
 
     </node>
     <!-- </group> -->
