@@ -49,6 +49,7 @@ list(APPEND CATKIN_SOURCES
     nav_msgs
     tf
     tf2_ros
+    eigen_conversions
     laser_geometry
     message_filters
     filters
@@ -74,7 +75,6 @@ list(APPEND CATKIN_SOURCES
     tf2_ros
     xmlrpcpp
   
-    # moveit_planners_ompl
     rviz_visual_tools
 
   )
@@ -147,9 +147,7 @@ add_script(planning2_srv scripts)
 add_script(planning2dubs_srv scripts)
 add_script(planning3dubs_srv scripts)
 # add_script(planning2dubs_bench scripts)
-add_script(path_exec scripts/utils)
-add_script(path_exec2 scripts/utils)
-add_script(pid_action scripts/utils)
+add_script(planningR_srv scripts)
 add_script(odom2tf scripts/utils)
 
 #############

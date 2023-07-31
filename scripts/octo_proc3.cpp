@@ -37,7 +37,7 @@ void getUnks(std::shared_ptr<octomap::OcTree> tree)
 
     // for publishing to the clustering algorithm
     hrov_martech2023::PointArray pt_array;
-    octomap::OcTreeNode *dummyNode;
+    octomap::OcTreeNode *dummyNode = new octomap::OcTreeNode();
 
     t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
     std::cout << t << "\n";

@@ -19,8 +19,6 @@
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/base/spaces/SO2StateSpace.h>
-#include <ompl/base/spaces/DubinsStateSpace.h>
-#include <ompl/base/spaces/ReedsSheppStateSpace.h>
 #include <ompl/base/PlannerData.h>
 #include <ompl/geometric/SimpleSetup.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
@@ -29,6 +27,7 @@
 #include <ompl/geometric/planners/sbl/SBL.h>
 #include <ompl/geometric/planners/prm/PRM.h>
 #include <ompl/geometric/planners/prm/LazyPRM.h>
+#include <ompl/base/StateSampler.h>
 
 // FCL STUFF
 // #include <fcl/fcl.h>
@@ -42,6 +41,61 @@
 
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
+
+class MyStateSampler : public ob::StateSampler
+{
+private:
+    ob::SpaceInformationPtr si_;
+
+public:
+    // MyStateSampler(const ob::StateSpacePtr &ss) : StateSampler(ss.get())
+    MyStateSampler(const ob::SpaceInformationPtr &si) : StateSampler(si->getStateSpace().get()), si_(si)
+    {
+        ROS_INFO("sampler construido.");
+    }
+
+    void sampleUniform(ob::State *state) override
+    {
+        std::cout << "sampleUniform?\n";
+        // ROS_INFO("SAMPLER SAMPLEANDO");
+
+        // ob::RealVectorStateSpace::StateType *stt = state->as<ob::RealVectorStateSpace::StateType>();
+        auto *rstate = static_cast<ob::RealVectorStateSpace::StateType *>(state);
+        for (unsigned int i = 0; i < 3; ++i)
+        {
+            rstate->values[i] = rng_.uniformReal(0, 1);
+            std::cout << rstate->values[i];
+        }
+        // rstate->values[3] = 1.57;
+        // ob::ScopedState<> stt(si_->getStateSpace(), state);
+        // stt.random();
+        // std::cout << stt.reals().at(0) << "\n";
+        // std::cout << state << "\n";
+        // std::cout << &state << "\n";
+
+        // ob::CompoundStateSpace::StateType;
+        // ob::State **comps = state->as<ob::CompoundStateSpace::StateType>()->components;
+        // for (unsigned int i = 0; i < 3; ++i)
+        // samplers_[i]->sampleUniform(comps[i]);
+        // comps[i]->as<ob::RealVectorStateSpace::StateType>;
+        //  = rng_.uniformReal(0, 1);
+    }
+
+    virtual void sampleUniformNear(ob::State *state, const ob::State *near, double distance)
+    {
+        std::cout << "sampleUniformNear?\n";
+    }
+
+    virtual void sampleGaussian(ob::State *state, const ob::State *mean, double stdDev)
+    {
+        std::cout << "sampleGaussian?\n";
+    }
+};
+
+// ob::StateSamplerPtr allocStateSampler(const ob::StateSpacePtr ss)
+// {
+//     return std::make_shared<MyStateSampler>(ss);
+// }
 
 class Validator : public ob::StateValidityChecker
 {
@@ -64,8 +118,9 @@ public:
         // std::cout << "validandoo beep boop\n";
         ob::ScopedState<> stt(si_->getStateSpace(), state);
         // stt.print();
-        auv_co_->setTranslation(Eigen::Vector3f(stt.reals().at(0), stt.reals().at(1), stt.reals().at(3)));
-        auv_co_->setRotation(Eigen::AngleAxisf(stt.reals().at(2), Eigen::Vector3f::UnitZ()).matrix());
+        auv_co_->setTranslation(Eigen::Vector3f(stt.reals().at(0), stt.reals().at(1), stt.reals().at(2)));
+        // auv_co_->setRotation(Eigen::AngleAxisf(stt.reals().at(3), Eigen::Vector3f::UnitZ()).matrix());
+        auv_co_->setRotation(Eigen::AngleAxisf(0, Eigen::Vector3f::UnitZ()).matrix());
         // std::cout << auv_co_->getTranslation() << "\n";
 
         fcl::CollisionRequestf col_req_;
@@ -129,20 +184,17 @@ public:
         std::cout << nh_.getNamespace() << "\n";
         pathPub = nh_.advertise<nav_msgs::Path>("planner/path_result", 1, true);
 
-        auto dubss(std::make_shared<ob::DubinsStateSpace>(0.5, false));
-        // auto dubss(std::make_shared<ob::ReedsSheppStateSpace>(1.0));
-        dubss->setName("Dubins");
-        ob::RealVectorBounds bounds(2);
-        bounds.setLow(-100);
-        bounds.setHigh(100);
-        dubss->setBounds(bounds);
-        auto zss(std::make_shared<ob::RealVectorStateSpace>(1));
-        zss->setName("Z");
-        ob::RealVectorBounds bounds2(1);
-        bounds2.setLow(0.5);
-        bounds2.setHigh(20);
-        zss->setBounds(bounds2);
-        navSpace_ = dubss + zss;
+        auto space(std::make_shared<ob::RealVectorStateSpace>(3));
+        // auto yaw(std::make_shared<ob::SO2StateSpace>());
+
+        // space->setName("Space");
+        ob::RealVectorBounds bounds(3);
+        bounds.setLow(-20);
+        bounds.setHigh(20);
+        space->setBounds(bounds);
+        // yaw->setName("Yaw");
+        // navSpace_ = space + yaw;
+        navSpace_ = space;
         navSpace_->setName("navSpace");
         navSpace_->setLongestValidSegmentFraction(0.1);
 
@@ -155,8 +207,18 @@ public:
         std::cout << "setting planner\n";
         planner_ = (std::make_shared<og::RRT>(si));
         planner_->params().setParam("range", "1");
+        planner_->printSettings(std::cout);
         ss_->setPlanner(planner_);
         std::cout << "printing setup\n";
+
+        // ss_->getSpaceInformation()->getStateSpace()->setStateSamplerAllocator(allocStateSampler(navSpace_));
+
+        // lambda no se que
+        ob::StateSamplerPtr mySampler(new MyStateSampler(ss_->getSpaceInformation()));
+        // ob::StateSamplerPtr mySampler(new MyStateSampler(navSpace_));
+        ss_->getSpaceInformation()->getStateSpace()->setStateSamplerAllocator([mySampler](const ob::StateSpace *navSpace_) -> ob::StateSamplerPtr
+                                                                              { return mySampler; });
+
         ss_->setup();
         ss_->print();
         std::cout << "done printing setup\n";
@@ -173,23 +235,22 @@ public:
         ss_->clear();
         visual_tools_->deleteAllMarkers();
 
-        t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
-        std::cout << t << "\n";
+        // t = tfBuffer.lookupTransform("world_ned", "girona1000/base_link", ros::Time(0));
+        // std::cout << t << "\n";
 
         ob::ScopedState<> current(navSpace_);
-        current[0] = t.transform.translation.x;
-        current[1] = t.transform.translation.y;
-        current[3] = t.transform.translation.z;
-        current[2] = tf2::transformToEigen(t).rotation().eulerAngles(2, 1, 0)[0];
+        current[0] = 0;
+        current[1] = 0;
+        current[2] = 2;
+        // current[3] = 0;
 
         ob::ScopedState<> goal(navSpace_);
         goal[0] = req.position.x;
         goal[1] = req.position.y;
-        goal[3] = req.position.z;
-        goal[2] = req.yaw;
+        goal[2] = req.position.z;
+        // goal[3] = req.yaw;
         std::cout << "requesting solution to:\n\n";
         ss_->setStartAndGoalStates(current, goal);
-
         ss_->print();
 
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -207,7 +268,8 @@ public:
             ss_->simplifySolution(5);
             pathres = ss_->getSolutionPath();
             std::cout << pathres.getStateCount() << "\n";
-            pathres.interpolate(pathres.getStateCount() * 10);
+            // g(x) = 4 ℯ ^ (-((1) / (3)) x) + 1
+            pathres.interpolate(pathres.getStateCount() * 3);
 
             EigenSTL::vector_Vector3d puntos;
             Eigen::Isometry3d punto;
@@ -218,18 +280,19 @@ public:
             for (auto stt : pathres.getStates())
             {
                 ob::ScopedState<ob::CompoundStateSpace> sstt(navSpace_, stt);
-                punto = Eigen::AngleAxisd(sstt.reals().at(2), Eigen::Vector3d::UnitZ());
+                // punto = Eigen::AngleAxisd(sstt.reals().at(3), Eigen::Vector3d::UnitZ());
                 punto.translation().x() = sstt.reals().at(0);
                 punto.translation().y() = sstt.reals().at(1);
-                punto.translation().z() = sstt.reals().at(3);
+                punto.translation().z() = sstt.reals().at(2);
                 puntos.push_back(punto.translation());
                 colors.push_back(colorlist_.at(i++ % colorlist_.size()));
                 visual_tools_->publishArrow(punto, rviz_visual_tools::RED, rviz_visual_tools::LARGE);
 
                 posestmp.pose.position.x = sstt.reals().at(0);
                 posestmp.pose.position.y = sstt.reals().at(1);
-                posestmp.pose.position.z = sstt.reals().at(3);
-                Eigen::Quaterniond q(Eigen::AngleAxisd(sstt.reals().at(2), Eigen::Vector3d::UnitZ()));
+                posestmp.pose.position.z = sstt.reals().at(2);
+                // Eigen::Quaterniond q(Eigen::AngleAxisd(sstt.reals().at(3), Eigen::Vector3d::UnitZ()));
+                Eigen::Quaterniond q(Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()));
                 posestmp.pose.orientation = tf2::toMsg(q);
                 path.poses.push_back(posestmp);
             }

@@ -33,10 +33,10 @@
 
         <!-- Run Simulator -->
         <arg name="simulation_data" value="$(find hrov_martech2023)/data"/>
-        <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/buoy.scn"/>
+        <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/buoy.scn"/> -->
+        <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/girona1000_tank.scn"/>
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/ship.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/porto_do_castelo.scn"/> -->
-        <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/girona1000_tank.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/corridor.scn"/> -->
         <!-- <arg name="scenario_description" value="$(find hrov_martech2023)/scenarios/cylinder.scn"/> -->
         <arg name="simulation_rate" value="100.0"/>
@@ -45,11 +45,13 @@
         <arg name="graphics_quality" value="low"/>
         <node name="stonefish_simulator" pkg="stonefish_ros" type="parsed_simulator" args="$(arg simulation_data) $(arg scenario_description) $(arg simulation_rate) $(arg graphics_resolution) $(arg graphics_quality)"/>
 
-        <node pkg="hrov_martech2023" type="odom2tf" name="odom2tf" output="screen">
+        <!-- <node pkg="hrov_martech2023" type="odom2tf" name="odom2tf" output="screen">
             <param name="odom_topic" value="/girona1000/stonefish/odometry"/>
             <param name="parent_frame" value="world_ned"/>
             <param name="child_frame" value="girona1000/base_link"/>
-        </node>
+        </node> -->
+
+        <node name="odom_to_tf" pkg="iauv_simulation" type="odom_to_tf.py"/>
 
     </group>
 
