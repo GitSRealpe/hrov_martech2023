@@ -28,19 +28,28 @@ find_package(Eigen3 REQUIRED)
 # set(OMPL_LIBRARIES /home/srealper/theLibs/ompl/build/Release/lib/libompl.so)
 find_package(ompl REQUIRED)
 message("ompl print")
-message("1 ${OMPL_FOUND}")
-message("2 ${OMPL_INCLUDE_DIRS}")
-message("3 ${OMPL_LIBRARY_DIRS}")
-message("4 ${OMPL_LIBRARY_DIR}")
-message("5 ${OMPL_LIBRARIES}")
+message("OMPL found? ${OMPL_FOUND}")
+# message("1 ${OMPL_FOUND}")
+# message("2 ${OMPL_INCLUDE_DIRS}")
+# message("3 ${OMPL_LIBRARY_DIRS}")
+# message("4 ${OMPL_LIBRARY_DIR}")
+# message("5 ${OMPL_LIBRARIES}")
 message("${OMPL_VERSION}")
+
 find_package(fcl REQUIRED)
 message("fcl prints")
+message("fcl found? ${FCL_FOUND}")
 # message("1 ${fcl_FOUND}")
 # message("2 ${FCL_INCLUDE_DIRS}")
 # message("3 ${FCL_LIBRARY_DIRS}")
 # message("4 ${FCL_LIBRARIES}")
 # message("5 ${FCL_VERSION}")
+
+find_package(gmm_registration)
+message("gmm_res prints")
+message("gmm_res found? ${gmm_registration_FOUND}")
+
+find_package(PythonLibs 3.8 REQUIRED)
 
 
 list(APPEND CATKIN_SOURCES
@@ -125,6 +134,7 @@ list(APPEND INCLUDES
   ${Boost_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
   ${FCL_INCLUDE_DIRS}
+  ${PYTHON_INCLUDE_DIRS} 
   
   )
 
@@ -149,6 +159,8 @@ add_script(planning3dubs_srv scripts)
 # add_script(planning2dubs_bench scripts)
 add_script(planningR_srv scripts)
 add_script(odom2tf scripts/utils)
+
+add_script(clustering scripts)
 
 #############
 ## Install ##
