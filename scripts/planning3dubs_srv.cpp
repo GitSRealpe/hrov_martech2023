@@ -154,7 +154,7 @@ public:
         ss_->setStateValidityChecker(ob::StateValidityCheckerPtr(new Validator(si, tree_obj_)));
         std::cout << "setting planner\n";
         planner_ = (std::make_shared<og::RRT>(si));
-        planner_->params().setParam("range", "1");
+        // planner_->params().setParam("range", "1");
         ss_->setPlanner(planner_);
         std::cout << "printing setup\n";
         ss_->setup();
