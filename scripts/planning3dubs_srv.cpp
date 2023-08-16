@@ -180,7 +180,9 @@ public:
         current[0] = t.transform.translation.x;
         current[1] = t.transform.translation.y;
         current[3] = t.transform.translation.z;
-        current[2] = tf2::transformToEigen(t).rotation().eulerAngles(2, 1, 0)[0];
+        // current[2] = tf2::transformToEigen(t).rotation().eulerAngles(2, 1, 0)[0];
+        // current[2] = tf2::transformToEigen(t).rotation().eulerAngles(0, 1, 2)[2];
+        current[2] = atan2(tf2::transformToEigen(t).rotation()(1, 0), tf2::transformToEigen(t).rotation()(0, 0));
 
         ob::ScopedState<> goal(navSpace_);
         goal[0] = req.position.x;
