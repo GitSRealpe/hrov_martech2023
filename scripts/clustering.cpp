@@ -6,17 +6,30 @@
 
 #include <ros/ros.h>
 #include <hrov_martech2023/PointArray.h>
+#include <hrov_martech2023/PlanGoal.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <interactive_markers/interactive_marker_server.h>
 #include <interactive_markers/menu_handler.h>
+#include <tf2_ros/transform_listener.h>
 
 #include <gmm_registration/front_end/GmmFrontEnd.hpp>
 #include <gmm_registration/front_end/GaussianMixturesModel.h>
 #include <Eigen/Eigenvalues>
+#include <eigen_conversions/eigen_msg.h>
+#include <tf_conversions/tf_eigen.h>
+
+#include <unsupported/Eigen/EulerAngles>
+
+std::shared_ptr<tf2_ros::TransformListener> tfListener;
+tf2_ros::Buffer tfBuffer;
+geometry_msgs::TransformStamped t;
 
 std::shared_ptr<interactive_markers::InteractiveMarkerServer> server;
 interactive_markers::MenuHandler menu_handler;
+ros::ServiceClient client;
+
+#define RANGE 1
 
 void modCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
 {
@@ -60,6 +73,28 @@ void modCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback
 
 void reqCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
 {
+    Eigen::Isometry3d m1;
+    tf::poseMsgToEigen(feedback->pose, m1);
+    geometry_msgs::Transform dummy;
+    dummy.translation.x = t.transform.translation.y - RANGE;
+    dummy.translation.y = t.transform.translation.x;
+    dummy.translation.z = t.transform.translation.z;
+    Eigen::Isometry3d m2;
+    tf::transformMsgToEigen(dummy, m2);
+    Eigen::Isometry3d goal = m1 * m2;
+    hrov_martech2023::PlanGoal req;
+    req.request.position.x = goal.translation().x();
+    req.request.position.y = goal.translation().y();
+    req.request.position.z = goal.translation().z();
+    // req.request.yaw = goal.rotation().eulerAngles(2, 1, 0)[0];
+    req.request.yaw = atan2(goal.rotation()(1, 0), goal.rotation()(0, 0));
+    // tf::quaternionEigenToTF(goal.rotation());
+    // tf::getYaw();
+    std::cout << "requesting to:\n"
+              << req.request << "\n";
+    client.call(req);
+    // Eigen::Vector3d v = {0, 0, 3};
+    // m2.translate(v);
 }
 
 void moveCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
@@ -91,16 +126,15 @@ public:
     // GoalMarker(Eigen::Vector3d pose, std::shared_ptr<interactive_markers::InteractiveMarkerServer> server)
     GoalMarker(Eigen::Vector3d pose, Eigen::Vector3d dir)
     {
-
         // Eigen::Quaterniond q;
         // q.FromTwoVectors(pose,dir);
-
         std::cout << "creando marcador\n";
 
         // create an interactive marker for our server
         visualization_msgs::InteractiveMarker int_marker;
         int_marker.header.frame_id = "world_ned";
         // int_marker.header.stamp = ros::Time::now(); the time stamp is the devil, breaks the pose frame feedback
+        // pose inicial del marcador
         int_marker.pose.position.x = pose.x();
         int_marker.pose.position.y = pose.y();
         int_marker.pose.position.z = pose.z();
@@ -108,14 +142,12 @@ public:
         int_marker.scale = 1;
         int_marker.name = "goalMarker" + std::to_string(server->size());
         // int_marker.description = "goalMarker" + std::to_string(server->size());
-        // pose inicial del marcador
 
         // main sphere
         visualization_msgs::InteractiveMarkerControl control;
         control.interaction_mode = visualization_msgs::InteractiveMarkerControl::BUTTON;
         control.always_visible = true;
         // control.name = "menu";
-
         visualization_msgs::Marker marker;
         marker.type = visualization_msgs::Marker::SPHERE;
         marker.pose.orientation.w = 1;
@@ -131,58 +163,66 @@ public:
 
         // lil sphere
         control = visualization_msgs::InteractiveMarkerControl();
-        // control.interaction_mode = InteractiveMarkerControl.NONE
         control.always_visible = true;
 
         marker = visualization_msgs::Marker();
         marker.type = visualization_msgs::Marker::SPHERE;
-        // marker.pose.position.x = trans.transform.translation.y
-        // marker.pose.position.z = trans.transform.translation.z
-        marker.pose.position.x = -0.539 - 3;
-        marker.pose.position.z = -0.75;
+        // marker.pose.position.x = -0.539
+        // marker.pose.position.z = -0.75
+        marker.pose.position.x = t.transform.translation.y - RANGE;
+        marker.pose.position.z = t.transform.translation.z;
         marker.scale.x = 0.1;
         marker.scale.y = 0.1;
         marker.scale.z = 0.1;
         marker.color.r = 1;
         marker.color.g = 1;
         marker.color.b = 1;
-        marker.color.a = 1;
+        marker.color.a = 0;
         control.markers.push_back(marker);
 
         // girona ghost
         marker = visualization_msgs::Marker();
         marker.type = visualization_msgs::Marker::MESH_RESOURCE;
         marker.mesh_resource = ("package://girona1000_description/resources/meshes/girona1000.dae");
-        marker.pose.position.x = -0.539 + 0.7 - 3;
-        marker.pose.position.z = -0.75 + 0.4;
+        marker.pose.position.x = t.transform.translation.y + 0.7 - RANGE;
+        marker.pose.position.z = t.transform.translation.z + 0.4;
         marker.pose.orientation.y = -0.707;
         marker.pose.orientation.z = 0.707;
-        marker.scale.x, marker.scale.y, marker.scale.z = 1;
+        marker.scale.x = 1;
+        marker.scale.y = 1;
+        marker.scale.z = 1;
         marker.color.r = 1;
         marker.color.g = 1;
         marker.color.b = 1;
         marker.color.a = 0;
         control.markers.push_back(marker);
 
-        // fov center
+        // cluster direction
         marker = visualization_msgs::Marker();
         marker.type = visualization_msgs::Marker::ARROW;
-        // marker.pose.position.x = -0.539 + 0.7 - 3;
-        // marker.pose.orientation.w = 1;
         geometry_msgs::Point arrow;
         marker.points.push_back(arrow);
         arrow.x = dir.x();
         arrow.y = dir.y();
         arrow.z = 0;
         marker.points.push_back(arrow);
-        // marker.scale.x = 3;
-        // marker.scale.y = 0.05;
-        // marker.scale.z = 0.05;
         marker.scale.x = 0.05;
         marker.scale.y = 0.1;
         marker.scale.z = 0.1;
         marker.color.r = 1;
         marker.color.a = 1;
+        control.markers.push_back(marker);
+        // // fov center
+        marker = visualization_msgs::Marker();
+        marker.type = visualization_msgs::Marker::ARROW;
+        // marker.pose.position.x = t.transform.translation.y + 0.7 - 3;
+        marker.pose.position.x = -RANGE;
+        marker.pose.orientation.w = 1;
+        marker.scale.x = RANGE;
+        marker.scale.y = 0.05;
+        marker.scale.z = 0.05;
+        marker.color.g = 1;
+        marker.color.a = 0;
         control.markers.push_back(marker);
         // // fov rigth
         // marker = visualization_msgs::Marker();
@@ -251,12 +291,27 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "clustering");
     ros::NodeHandle nh;
 
+    client = nh.serviceClient<hrov_martech2023::PlanGoal>("getPath");
+
+    tfListener.reset(new tf2_ros::TransformListener(tfBuffer));
+    while (true)
+    {
+        try
+        {
+            t = tfBuffer.lookupTransform("girona1000/laser_link", "girona1000/base_link", ros::Time(0));
+            break;
+        }
+        catch (tf2::TransformException &ex)
+        {
+            // ROS_WARN("%s", ex.what());
+            ros::Duration(0.5).sleep();
+            continue;
+        }
+    }
+
     // create an interactive marker server on the topic namespace pose_markers
     server.reset(new interactive_markers::InteractiveMarkerServer("menu"));
     init_menu();
-
-    // GoalMarker marker0({0, 0, 0}, server);
-    // GoalMarker marker1({1, 1, 0}, server);
 
     hrov_martech2023::PointArrayConstPtr points_msg = ros::topic::waitForMessage<hrov_martech2023::PointArray>("/octo/unk_cells");
     std::vector<Eigen::Vector3d> pts;
