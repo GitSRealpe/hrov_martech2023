@@ -19,8 +19,6 @@
 #include <eigen_conversions/eigen_msg.h>
 #include <tf_conversions/tf_eigen.h>
 
-#include <unsupported/Eigen/EulerAngles>
-
 std::shared_ptr<tf2_ros::TransformListener> tfListener;
 tf2_ros::Buffer tfBuffer;
 geometry_msgs::TransformStamped t;
@@ -138,7 +136,9 @@ public:
         int_marker.pose.position.x = pose.x();
         int_marker.pose.position.y = pose.y();
         int_marker.pose.position.z = pose.z();
-        int_marker.pose.orientation.w = 1;
+        // int_marker.pose.orientation.w = 1;
+        Eigen::Quaterniond q(Eigen::AngleAxisd(atan2(dir.y(), dir.x()), Eigen::Vector3d::UnitZ()));
+        tf::quaternionEigenToMsg(q, int_marker.pose.orientation);
         int_marker.scale = 1;
         int_marker.name = "goalMarker" + std::to_string(server->size());
         // int_marker.description = "goalMarker" + std::to_string(server->size());
@@ -151,9 +151,7 @@ public:
         visualization_msgs::Marker marker;
         marker.type = visualization_msgs::Marker::SPHERE;
         marker.pose.orientation.w = 1;
-        marker.scale.x = 0.4;
-        marker.scale.y = 0.4;
-        marker.scale.z = 0.4;
+        marker.scale.x = marker.scale.y = marker.scale.z = 0.4;
         marker.color.r = 1;
         marker.color.g = 0.796;
         marker.color.b = 0.0;
@@ -171,12 +169,8 @@ public:
         // marker.pose.position.z = -0.75
         marker.pose.position.x = t.transform.translation.y - RANGE;
         marker.pose.position.z = t.transform.translation.z;
-        marker.scale.x = 0.1;
-        marker.scale.y = 0.1;
-        marker.scale.z = 0.1;
-        marker.color.r = 1;
-        marker.color.g = 1;
-        marker.color.b = 1;
+        marker.scale.x = marker.scale.y = marker.scale.z = 0.1;
+        marker.color.r = marker.color.g = marker.color.b = 1;
         marker.color.a = 0;
         control.markers.push_back(marker);
 
@@ -188,12 +182,8 @@ public:
         marker.pose.position.z = t.transform.translation.z + 0.4;
         marker.pose.orientation.y = -0.707;
         marker.pose.orientation.z = 0.707;
-        marker.scale.x = 1;
-        marker.scale.y = 1;
-        marker.scale.z = 1;
-        marker.color.r = 1;
-        marker.color.g = 1;
-        marker.color.b = 1;
+        marker.scale.x = marker.scale.y = marker.scale.z = 1;
+        marker.color.r = marker.color.g = marker.color.b = 1;
         marker.color.a = 0;
         control.markers.push_back(marker);
 
@@ -202,9 +192,10 @@ public:
         marker.type = visualization_msgs::Marker::ARROW;
         geometry_msgs::Point arrow;
         marker.points.push_back(arrow);
-        arrow.x = dir.x();
-        arrow.y = dir.y();
-        arrow.z = 0;
+        // arrow.x = dir.x();
+        // arrow.y = dir.y();
+        arrow.x = 0.5;
+        // arrow.z = 0;
         marker.points.push_back(arrow);
         marker.scale.x = 0.05;
         marker.scale.y = 0.1;
