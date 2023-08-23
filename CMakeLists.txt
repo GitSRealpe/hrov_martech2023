@@ -90,7 +90,7 @@ list(APPEND CATKIN_SOURCES
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation actionlib)
 
-catkin_python_setup()
+
 
 add_message_files(
   FILES
@@ -105,6 +105,8 @@ add_service_files(
 add_action_files(
   DIRECTORY action 
   FILES PID.action)
+
+catkin_python_setup()
 
 generate_messages(
  DEPENDENCIES

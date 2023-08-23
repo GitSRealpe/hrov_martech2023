@@ -52,6 +52,15 @@
 
   <depend>rviz_visual_tools</depend>
 
+  <!-- cola pkgs -->
+  <depend>girona1000_description</depend>
+  <depend>cola2_girona1000</depend>
+  <depend>stonefish_ros</depend>
+  <depend>cola2_stonefish</depend>
+  <!-- <depend>cola2_core</depend> -->
+  <depend>iauv_simulation</depend>
+  <!-- cola pkgs -->
+
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
 
