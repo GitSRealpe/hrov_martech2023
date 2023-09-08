@@ -7,6 +7,7 @@
 #include <ros/ros.h>
 #include <hrov_martech2023/PointArray.h>
 #include <hrov_martech2023/PlanGoal.h>
+#include <std_srvs/Trigger.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <interactive_markers/interactive_marker_server.h>
@@ -25,7 +26,8 @@ geometry_msgs::TransformStamped t;
 
 std::shared_ptr<interactive_markers::InteractiveMarkerServer> server;
 interactive_markers::MenuHandler menu_handler;
-ros::ServiceClient client;
+ros::ServiceClient pathClient;
+ros::ServiceClient moveClient;
 
 #define RANGE 1
 
@@ -90,13 +92,16 @@ void reqCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback
     // tf::getYaw();
     std::cout << "requesting to:\n"
               << req.request << "\n";
-    client.call(req);
+    pathClient.call(req);
     // Eigen::Vector3d v = {0, 0, 3};
     // m2.translate(v);
 }
 
 void moveCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
 {
+    std::cout << "requesting path following\n";
+    std_srvs::Trigger req;
+    std::cout << moveClient.call(req) << "\n";
 }
 
 void init_menu()
@@ -282,7 +287,8 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "clustering");
     ros::NodeHandle nh;
 
-    client = nh.serviceClient<hrov_martech2023::PlanGoal>("getPath");
+    pathClient = nh.serviceClient<hrov_martech2023::PlanGoal>("getPath");
+    moveClient = nh.serviceClient<std_srvs::Trigger>("path_manager_server/startPath");
 
     tfListener.reset(new tf2_ros::TransformListener(tfBuffer));
     while (true)
