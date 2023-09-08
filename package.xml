@@ -58,7 +58,8 @@
   <depend>stonefish_ros</depend>
   <depend>cola2_stonefish</depend>
   <!-- <depend>cola2_core</depend> -->
-  <depend>iauv_simulation</depend>
+  <!-- <depend>iauv_simulation</depend> -->
+  <depend>girona_utils</depend>
   <!-- cola pkgs -->
 
   <build_depend>message_generation</build_depend>

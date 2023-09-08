@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Repeat num_cycles="1">
+            <Sequence name="Init_seq">
+                <Action ID="WaitForMsg" msg_topic="/whatever"/>
+                <Action ID="FollowPath" success=""/>
+            </Sequence>
+        </Repeat>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="FollowPath">
+            <output_port name="success"/>
+        </Action>
+        <Action ID="WaitForMsg">
+            <input_port name="msg_topic" type="std::string">Topic of the msg</input_port>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>

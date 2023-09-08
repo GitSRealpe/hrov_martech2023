@@ -48,9 +48,10 @@ message("fcl found? ${FCL_FOUND}")
 find_package(gmm_registration)
 message("gmm_res prints")
 message("gmm_res found? ${gmm_registration_FOUND}")
-
 find_package(PythonLibs 3.8 REQUIRED)
 
+find_package(behaviortree_cpp_v3)
+# message("BT prints")
 
 list(APPEND CATKIN_SOURCES
     roscpp
@@ -71,11 +72,8 @@ list(APPEND CATKIN_SOURCES
     std_msgs
     sensor_msgs
     geometry_msgs
-    visualization_msgs
     shape_msgs
-    octomap_msgs
     trajectory_msgs
-    object_recognition_msgs
     rosbag
     urdf
     srdfdom
@@ -86,11 +84,10 @@ list(APPEND CATKIN_SOURCES
   
     rviz_visual_tools
 
+    girona_utils
   )
 
-find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation actionlib)
-
-
+find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation actionlib genmsg)
 
 add_message_files(
   FILES
@@ -149,6 +146,12 @@ list(APPEND LIBRARIES
     ${Boost_LIBRARIES}
 )
 
+add_library(${PROJECT_NAME}
+  src/bt/print.cpp
+  src/bt/waitForMsg.cpp
+  src/bt/followPath.cpp
+)
+
 add_script(laser2ptcloud scripts/utils)
 add_script(octo_proc1 scripts)
 add_script(octo_proc2 scripts)
@@ -163,6 +166,13 @@ add_script(planningR_srv scripts)
 add_script(odom2tf scripts/utils)
 
 add_script(clustering scripts)
+
+target_link_libraries(${PROJECT_NAME} BT::behaviortree_cpp_v3  ${catkin_LIBRARIES})
+add_executable(tree_main scripts/bt/tree_main.cpp)
+add_dependencies(tree_main ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(tree_main ${catkin_LIBRARIES} ${PROJECT_NAME})
+
+# add_script(tree_main scripts/bt)
 
 #############
 ## Install ##

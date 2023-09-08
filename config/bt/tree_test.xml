@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <RetryUntilSuccessful num_attempts="100">
+            <Delay delay_msec="1000">
+                <Action ID="Print" service_name="exito"/>
+            </Delay>
+        </RetryUntilSuccessful>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="Print">
+            <input_port name="service_name"/>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
