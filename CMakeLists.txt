@@ -92,6 +92,7 @@ find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation act
 add_message_files(
   FILES
   PointArray.msg
+  BaseGoal.msg
 )
 
 add_service_files(
@@ -147,25 +148,27 @@ list(APPEND LIBRARIES
 )
 
 add_library(${PROJECT_NAME}
-  src/bt/print.cpp
+  # src/bt/print.cpp
   src/bt/waitForMsg.cpp
   src/bt/followPath.cpp
+  src/bt/planPath.cpp
 )
 
 add_script(laser2ptcloud scripts/utils)
-add_script(octo_proc1 scripts)
-add_script(octo_proc2 scripts)
+add_script(octo_proc1 scripts/legacy)
+add_script(octo_proc2 scripts/legacy)
 add_script(octo_proc3 scripts)
 # add_script(planning2 scripts)
-add_script(planning2_srv scripts)
+# add_script(planning2_srv scripts)
 # add_script(planning2dubs scripts)
-add_script(planning2dubs_srv scripts)
-add_script(planning3dubs_srv scripts)
+# add_script(planning2dubs_srv scripts)
 # add_script(planning2dubs_bench scripts)
-add_script(planningR_srv scripts)
+# add_script(planningR_srv scripts)
+add_script(planning3dubs_srv scripts)
 add_script(odom2tf scripts/utils)
 
 add_script(clustering scripts)
+add_script(clustering_bt scripts)
 
 target_link_libraries(${PROJECT_NAME} BT::behaviortree_cpp_v3  ${catkin_LIBRARIES})
 add_executable(tree_main scripts/bt/tree_main.cpp)
@@ -187,7 +190,7 @@ target_link_libraries(tree_main ${catkin_LIBRARIES} ${PROJECT_NAME})
 
 catkin_install_python(PROGRAMS
   scripts/clustering.py
-  scripts/clustering_plot.py
+  # scripts/clustering_plot.py
   # scripts/utils/path_manager.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

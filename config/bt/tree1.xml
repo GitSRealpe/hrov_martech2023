@@ -2,20 +2,24 @@
 <root main_tree_to_execute="BehaviorTree">
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
-        <Repeat num_cycles="1">
+        <Repeat num_cycles="10">
             <Sequence name="Init_seq">
-                <Action ID="WaitForMsg" msg_topic="/whatever"/>
-                <Action ID="FollowPath" success=""/>
+                <Action ID="WaitForMsg" msg_topic="/stage" req_value="planPath"/>
+                <Action ID="PlanPath"/>
             </Sequence>
         </Repeat>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
-        <Action ID="FollowPath">
+        <!-- <Action ID="FollowPath">
+            <output_port name="success"/>
+        </Action> -->
+        <Action ID="PlanPath">
             <output_port name="success"/>
         </Action>
         <Action ID="WaitForMsg">
-            <input_port name="msg_topic" type="std::string">Topic of the msg</input_port>
+            <input_port name="msg_topic">Topic of the msg</input_port>
+            <input_port name="req_value">Expected value of the msg</input_port>
         </Action>
     </TreeNodesModel>
     <!-- ////////// -->

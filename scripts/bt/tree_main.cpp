@@ -3,9 +3,10 @@
 #include <ros/ros.h>
 #include <ros/console.h>
 
-#include <behaviors/print.h>
+// #include <behaviors/print.h>
 #include <behaviors/waitForMsg.h>
 #include <behaviors/followPath.h>
+#include <behaviors/planPath.h>
 
 using namespace BT;
 
@@ -31,8 +32,11 @@ int main(int argc, char **argv)
 
     BehaviorTreeFactory factory;
 
-    RegisterROSNode<FollowPath>(factory, "FollowPath", nh);
+    std::cout << "registering bt nodes\n";
+    RegisterROSNode<PlanPath>(factory, "PlanPath", nh);
     RegisterROSNode<WaitForMsg>(factory, "WaitForMsg", nh);
+    std::cout << "bt nodes registered\n";
+    // RegisterROSNode<FollowPath>(factory, "FollowPath", nh);
 
     factory.registerBehaviorTreeFromFile(argv[1]);
     ROS_INFO_STREAM("Registered BT:");
