@@ -21,8 +21,9 @@ namespace BT
 
         static PortsList providedPorts()
         {
-            return {InputPort<std::string>("msg_topic", "Topic of the msg")};
-            // return {InputPort("msg_topic", "Topic of the msg")};
+            return {InputPort<std::string>("msg_topic", "Topic of the msg"),
+                    InputPort<std::string>("req_value", "Expected value of the msg")};
+            // return {InputPort<std::string>("req_value", "Expected value of the msg")};
         }
 
     protected:
@@ -44,6 +45,8 @@ namespace BT
         ros::NodeHandle nh_;
         // ros::Subscriber sub_;
         std::string msg_topic_;
+        std::string req_value_;
+        std_msgs::StringConstPtr msg_value_;
     };
 } // namespace BT
 
