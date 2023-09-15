@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     RegisterROSNode<PlanPath>(factory, "PlanPath", nh);
     RegisterROSNode<WaitForMsg>(factory, "WaitForMsg", nh);
     std::cout << "bt nodes registered\n";
-    // RegisterROSNode<FollowPath>(factory, "FollowPath", nh);
+    RegisterROSNode<FollowPath>(factory, "FollowPath", nh);
 
     factory.registerBehaviorTreeFromFile(argv[1]);
     ROS_INFO_STREAM("Registered BT:");

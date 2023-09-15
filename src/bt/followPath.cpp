@@ -11,18 +11,13 @@ namespace BT
         std::cout << "Instance of " << name << " created!" << std::endl; // Check when the object is built
         std::cout << "using rosnode: " << nh_.getNamespace() << "\n";
         moveClient = nh.serviceClient<std_srvs::Trigger>("path_manager_server/startPath");
-        // ros::Subscriber subFeed = nh.subscribe("/pid_controller/feedback", 10, &callback, this);
-        ros::Subscriber subFeed = nh.subscribe("/pid_controller/feedback", 10, &FollowPath::callback, this);
+        ros::Subscriber subFeed = nh.subscribe("path_manager_server/status", 10, &FollowPath::callback, this);
     }
 
     void FollowPath::callback(const girona_utils::PathStatusConstPtr pathMsg)
     {
         std::cout << pathMsg->status << "\n";
     }
-
-    // void callback(const girona_utils::PathStatusConstPtr pathMsg)
-    // {
-    // }
 
     NodeStatus FollowPath::onStart()
     {
@@ -37,7 +32,7 @@ namespace BT
         if (moveClient.call(req))
         {
             std::cout << "call was succesfull \n";
-            return NodeStatus::RUNNING;
+            return NodeStatus::SUCCESS;
         }
         else
         {

@@ -105,8 +105,9 @@ void reqCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback
 void moveCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
 {
     std::cout << "requesting path following\n";
-    std_srvs::Trigger req;
-    // std::cout << moveClient.call(req) << "\n";
+    std_msgs::String stage;
+    stage.data = "followPath";
+    stagePub.publish(stage);
 }
 
 void init_menu()

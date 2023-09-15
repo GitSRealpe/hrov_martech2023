@@ -5,15 +5,17 @@
         <Repeat num_cycles="10">
             <Sequence name="Init_seq">
                 <Action ID="WaitForMsg" msg_topic="/stage" req_value="planPath"/>
-                <Action ID="PlanPath"/>
+                <Action ID="PlanPath" success=""/>
+                <Action ID="WaitForMsg" msg_topic="/stage" req_value="followPath"/>
+                <Action ID="FollowPath" success=""/>
             </Sequence>
         </Repeat>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
-        <!-- <Action ID="FollowPath">
+        <Action ID="FollowPath">
             <output_port name="success"/>
-        </Action> -->
+        </Action>
         <Action ID="PlanPath">
             <output_port name="success"/>
         </Action>
