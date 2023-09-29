@@ -4,7 +4,8 @@
 #include <behaviortree_cpp_v3/action_node.h>
 #include <behaviortree_cpp_v3/bt_factory.h>
 #include <std_msgs/String.h>
-#include <girona_utils/PathStatus.h>
+// #include <girona_utils/PathStatus.h>
+#include <girona_utils/PathAction.h>
 #include <ros/ros.h>
 #include <thread>
 
@@ -42,12 +43,13 @@ namespace BT
         // why virtual, why not override like CheckAttachment.h
         // void callback(const std_msgs::String &msg) override;
         // virtual void callback(const std_msgs::String &msg);
-        virtual void callback(girona_utils::PathStatusConstPtr);
+        // virtual void callback(girona_utils::PathStatusConstPtr);
+        virtual void feedback(girona_utils::PathFeedbackConstPtr);
 
         ros::NodeHandle nh_;
         // ros::Subscriber sub_;
         std::string msg_topic_;
-        girona_utils::PathStatus pathStatus_;
+        girona_utils::PathFeedbackConstPtr pathStatus_;
     };
 } // namespace BT
 
