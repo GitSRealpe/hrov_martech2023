@@ -1,0 +1,69 @@
+bravo:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+    
+  # joint_position_controller:
+  #   type: position_controllers/JointTrajectoryController
+  #   joints:
+  #     - girona1000/bravo/joint1
+  #     - girona1000/bravo/joint2
+  #     - girona1000/bravo/joint3
+  #     - girona1000/bravo/joint4
+  #     - girona1000/bravo/joint5
+  #     - girona1000/bravo/joint6
+
+  joint_velocity_controller:
+    type: velocity_controllers/JointGroupVelocityController
+    joints:
+      - girona1000/bravo/joint1
+      - girona1000/bravo/joint2
+      - girona1000/bravo/joint3
+      - girona1000/bravo/joint4
+      - girona1000/bravo/joint5
+      - girona1000/bravo/joint6
+  
+  # joint position translated into joint velocities
+  joint_position_controller:
+    type: velocity_controllers/JointTrajectoryController
+    joints:
+      - girona1000/bravo/joint1
+      - girona1000/bravo/joint2
+      - girona1000/bravo/joint3
+      - girona1000/bravo/joint4
+      - girona1000/bravo/joint5
+      - girona1000/bravo/joint6
+    gains:
+      girona1000/bravo/joint1: { p: 5.0, i: 0.0, d: 0.0, i_clamp_min: -1, i_clamp_max: 1 }
+      girona1000/bravo/joint2: { p: 5.0, i: 0.0, d: 0.0, i_clamp_min: -1, i_clamp_max: 1 }
+      girona1000/bravo/joint3: { p: 5.0, i: 0.0, d: 0.0, i_clamp_min: -1, i_clamp_max: 1 }
+      girona1000/bravo/joint4: { p: 5.0, i: 0.0, d: 0.0, i_clamp_min: -1, i_clamp_max: 1 }
+      girona1000/bravo/joint5: { p: 5.0, i: 0.0, d: 0.0, i_clamp_min: -1, i_clamp_max: 1 }
+      girona1000/bravo/joint6: { p: 5.0, i: 0.0, d: 0.0, i_clamp_min: -1, i_clamp_max: 1 }
+    constraints:
+      goal_time: 0.6
+      stopped_velocity_tolerance: 0
+
+  jaws_position_controller:
+    type: velocity_controllers/JointTrajectoryController
+    joints:
+      - girona1000/bravo/finger_small_joint
+      - girona1000/bravo/finger_large_joint
+    gains:
+      girona1000/bravo/finger_small_joint: { p: 5.0, i: 0.0, d: 0.0, i_clamp_min: -1, i_clamp_max: 1 }
+      girona1000/bravo/finger_large_joint: { p: 5.0, i: 0.0, d: 0.0, i_clamp_min: -1, i_clamp_max: 1 }
+
+
+# bravo/jaws:
+#   joint_state_controller:
+#       type: joint_state_controller/JointStateController
+#       publish_rate: 50
+
+#   jaws_controller:
+#     type: position_controllers/JointTrajectoryController  
+#     joints:
+#       - girona1000/bravo/finger_small_joint
+#       - girona1000/bravo/finger_large_joint
+    # gains:
+    #   girona1000/bravo/finger_small_joint: { p: 5.0, i: 0.0, d: 0.0, i_clamp_min: -1, i_clamp_max: 1 }
+    #   girona1000/bravo/finger_large_joint: { p: 5.0, i: 0.0, d: 0.0, i_clamp_min: -1, i_clamp_max: 1 }

@@ -47,7 +47,8 @@
         <arg name="position" value="0.0 0.0 5.0"/>
     </include> -->
 
-    <include file="$(find hrov_martech2023)/scenarios/girona1000.scn">
+    <!-- <include file="$(find hrov_martech2023)/scenarios/girona1000.scn"> -->
+    <include file="$(find hrov_martech2023)/scenarios/girona1000bravo.scn">
         <arg name="robot_name" value="girona1000"/>
         <arg name="start_yaw" value="0.0"/>
         <arg name="start_position" value="0.0 0.0 0.0"/>

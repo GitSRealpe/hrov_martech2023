@@ -6,6 +6,7 @@
     <arg name="joystick_device" default="/dev/input/js0"/>
     <arg name="enable_gui" default="true"/>
     <arg name="enable_rviz" default="true"/>
+    <arg name="robot_xacro" default="$(find optihrov2_description)/urdf/g1000_optihrov2.macro.xacro"/>
 
     <include file="$(find hrov_martech2023)/launch/utils/octomap.launch"/>
 
@@ -14,6 +15,14 @@
 
     <!-- Namespace with robot name -->
     <group ns="$(arg robot_name)">
+
+        <!-- Robot description -->
+        <!-- Load robot description -->
+        <include file="$(find girona1000_description)/launch/girona1000_description.launch">
+            <arg name="robot_name" value="$(arg robot_name)"/>
+            <arg name="robot_xacro" value="$(arg robot_xacro)"/>
+        </include>
+
         <!-- Load configs -->
         <include file="$(find hrov_martech2023)/launch/utils/girona1000_colasim.launch">
             <arg name="robot_name" value="$(arg robot_name)"/>
@@ -23,13 +32,8 @@
             <arg name="enable_gui" value="$(arg enable_gui)"/>
         </include>
 
-        <!-- Robot description -->
-        <!-- usar un xacro diferente para custom payload -->
-        <arg name="robot_xacro" default="$(find girona1000_description)/urdf/payload.urdf.xacro"/>
-        <param name="robot_description" command="$(find xacro)/xacro --inorder '$(arg robot_xacro)' robot_namespace:=$(arg robot_name)"/>
-
         <!-- Robot state publisher -->
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
+        <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/> -->
 
         <!-- Run Simulator -->
         <arg name="simulation_data" value="$(find hrov_martech2023)/data"/>
@@ -43,15 +47,28 @@
         <arg name="graphics_resolution" value="1440 900"/>
         <!-- <arg name="graphics_resolution" value="1920 1080"/> -->
         <arg name="graphics_quality" value="low"/>
-        <node name="stonefish_simulator" pkg="stonefish_ros" type="parsed_simulator" args="$(arg simulation_data) $(arg scenario_description) $(arg simulation_rate) $(arg graphics_resolution) $(arg graphics_quality)"/>
+        <node name="stonefish_simulator" pkg="stonefish_ros" type="parsed_simulator" args="$(arg simulation_data) $(arg scenario_description) $(arg simulation_rate) $(arg graphics_resolution) $(arg graphics_quality)">
+            <remap from="/girona1000/bravo/joint_states" to="/girona1000/joint_states"/>
+        </node>
 
         <!-- <node pkg="hrov_martech2023" type="odom2tf" name="odom2tf" output="screen">
             <param name="odom_topic" value="/girona1000/stonefish/odometry"/>
             <param name="parent_frame" value="world_ned"/>
             <param name="child_frame" value="girona1000/base_link"/>
         </node> -->
-
         <node name="odom_to_tf" pkg="iauv_simulation" type="odom_to_tf.py"/>
+
+        <!--Cargar controladores-->
+        <rosparam command="load" file="$(find hrov_martech2023)/config/bravo/controllers.yaml"/>
+        <!--Lanzar controladores-->
+        <group ns="bravo">
+            <node name="controller_starter_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+                args="joint_state_controller jaws_position_controller joint_position_controller"/>
+            <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+                args="--stopped joint_velocity_controller "/>
+        </group>
+
+        <node name="controllers_gui" pkg="rqt_controller_manager" type="rqt_controller_manager"/>
 
     </group>
 
