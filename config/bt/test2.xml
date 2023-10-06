@@ -4,15 +4,17 @@
     <BehaviorTree ID="BehaviorTree">
         <Repeat num_cycles="10">
             <Sequence name="Init_seq">
-                <Fallback>
-                    <Action ID="WaitForMsg" msg_topic="/stage" req_value="followPath"/>
-                    <Sequence>
-                        <Action ID="Print" service_name="tests"/>
-                        <Action ID="WaitForMsg" msg_topic="/stage" req_value="planPath"/>
-                        <Action ID="FollowPath" success=""/>
-                    </Sequence>
-                </Fallback>
-                <Action ID="Print" service_name="done"/>
+                <Inverter>
+                    <KeepRunningUntilFailure>
+                        <Sequence>
+                            <Inverter>
+                                <Action ID="WaitForMsg" msg_topic="/stage" req_value="followPath"/>
+                            </Inverter>
+                            <Action ID="PlanPath" success=""/>
+                        </Sequence>
+                    </KeepRunningUntilFailure>
+                </Inverter>
+                <Action ID="FollowPath" success=""/>
             </Sequence>
         </Repeat>
     </BehaviorTree>

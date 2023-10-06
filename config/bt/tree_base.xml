@@ -4,28 +4,20 @@
     <BehaviorTree ID="BehaviorTree">
         <Repeat num_cycles="10">
             <Sequence name="Init_seq">
-                <Fallback>
-                    <Action ID="WaitForMsg" msg_topic="/stage" req_value="followPath"/>
-                    <Sequence>
-                        <Action ID="Print" service_name="tests"/>
-                        <Action ID="WaitForMsg" msg_topic="/stage" req_value="planPath"/>
-                        <Action ID="FollowPath" success=""/>
-                    </Sequence>
-                </Fallback>
-                <Action ID="Print" service_name="done"/>
+                <Action ID="WaitForMsg" msg_topic="/stage" req_value="planPath"/>
+                <Action ID="PlanPath" success=""/>
+                <Action ID="WaitForMsg" msg_topic="/stage" req_value="followPath"/>
+                <Action ID="FollowPath" success=""/>
             </Sequence>
         </Repeat>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
         <Action ID="FollowPath">
-            <output_port name="success" type="bool">Trajectory succesfull?</output_port>
+            <output_port name="success"/>
         </Action>
         <Action ID="PlanPath">
             <output_port name="success"/>
-        </Action>
-        <Action ID="Print">
-            <input_port name="service_name"/>
         </Action>
         <Action ID="WaitForMsg">
             <input_port name="msg_topic">Topic of the msg</input_port>

@@ -3,7 +3,7 @@
     <arg name="robot_name" default="girona1000"/>
 
     <!-- <group ns="$(arg robot_name)"> -->
-    <node name="behavior_tree" type="tree_main" pkg="hrov_martech2023" args="$(find hrov_martech2023)/config/bt/tree1.xml $(arg tree)" output="screen"/>
+    <node name="behavior_tree" type="tree_main" pkg="hrov_martech2023" args="$(find hrov_martech2023)/config/bt/test2.xml $(arg tree)" output="screen"/>
 
     <!-- </group> -->
 </launch>
