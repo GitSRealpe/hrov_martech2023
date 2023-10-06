@@ -23,7 +23,7 @@ namespace BT
     NodeStatus WaitForMsg::onRunning()
     {
         // timeput para que no se quede bloqueado el arbol para siempre
-        ROS_INFO_STREAM(name() << " Waiting for user input on topic " << msg_topic_);
+        ROS_INFO_STREAM(name() << " Waiting for msg (" << req_value_ << ")on topic: " << msg_topic_);
         // wait for msg
         msg_value_ = ros::topic::waitForMessage<std_msgs::String>(msg_topic_);
 
@@ -34,7 +34,8 @@ namespace BT
         else
         {
             // msg_value_ is and req is
-            return NodeStatus::RUNNING;
+            // return NodeStatus::RUNNING;
+            return NodeStatus::FAILURE;
         }
         return NodeStatus::FAILURE;
     }
