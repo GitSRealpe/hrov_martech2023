@@ -12,7 +12,7 @@ namespace BT
     class Print : public BT::SyncActionNode
     {
     public:
-        Print(ros::NodeHandle &nh, const std::string &name, const BT::NodeConfiguration &conf);
+        Print(const std::string &name, const BT::NodeConfiguration &conf);
 
         Print() = delete;
 
@@ -22,8 +22,6 @@ namespace BT
         }
 
     protected:
-        ros::NodeHandle &node_;
-
         BT::NodeStatus tick() override;
     };
 

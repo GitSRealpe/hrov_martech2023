@@ -7,6 +7,7 @@
 #include <behaviors/waitForMsg.h>
 #include <behaviors/followPath.h>
 #include <behaviors/planPath.h>
+#include <behaviors/print.h>
 
 using namespace BT;
 
@@ -25,18 +26,19 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "behavior_tree1");
     ros::NodeHandle nh;
 
-    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
-    {
-        ros::console::notifyLoggerLevelsChanged();
-    }
+    // if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
+    // {
+    //     ros::console::notifyLoggerLevelsChanged();
+    // }
 
     BehaviorTreeFactory factory;
 
     std::cout << "registering bt nodes\n";
     RegisterROSNode<PlanPath>(factory, "PlanPath", nh);
     RegisterROSNode<WaitForMsg>(factory, "WaitForMsg", nh);
-    std::cout << "bt nodes registered\n";
     RegisterROSNode<FollowPath>(factory, "FollowPath", nh);
+    factory.registerNodeType<Print>("Print");
+    std::cout << "bt nodes registered\n";
 
     factory.registerBehaviorTreeFromFile(argv[1]);
     ROS_INFO_STREAM("Registered BT:");
