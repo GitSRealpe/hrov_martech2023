@@ -51,7 +51,10 @@ message("gmm_res found? ${gmm_registration_FOUND}")
 find_package(PythonLibs 3.8 REQUIRED)
 
 find_package(behaviortree_cpp_v3)
-# message("BT prints")
+message("BT prints")
+
+find_package(OpenCV REQUIRED)
+message("OpenCV version ${OpenCV_VERSION}")
 
 list(APPEND CATKIN_SOURCES
     roscpp
@@ -86,6 +89,10 @@ list(APPEND CATKIN_SOURCES
 
     girona_utils
     iauv_kinematic_control
+    
+    cv_bridge
+    image_transport
+    image_geometry
   )
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation actionlib genmsg)
@@ -136,7 +143,7 @@ list(APPEND INCLUDES
   ${EIGEN3_INCLUDE_DIRS}
   ${FCL_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS} 
-  
+  ${OpenCV_INCLUDE_DIRS} 
   )
 
 include_directories(SYSTEM ${INCLUDES})
@@ -146,6 +153,7 @@ list(APPEND LIBRARIES
     ${FCL_LIBRARIES}
     ${catkin_LIBRARIES}
     ${Boost_LIBRARIES}
+    ${OpenCV_LIBRARIES}
 )
 
 add_library(${PROJECT_NAME}
@@ -170,6 +178,7 @@ add_script(odom2tf scripts/utils)
 
 add_script(clustering scripts)
 add_script(clustering_bt scripts)
+add_script(aruco_pose scripts)
 
 target_link_libraries(${PROJECT_NAME} BT::behaviortree_cpp_v3  ${catkin_LIBRARIES})
 add_executable(tree_main scripts/bt/tree_main.cpp)

@@ -52,6 +52,10 @@
 
   <depend>rviz_visual_tools</depend>
 
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+  <depend>image_geometry</depend>
+
   <!-- cola pkgs -->
   <depend>girona1000_description</depend>
   <depend>cola2_girona1000</depend>
