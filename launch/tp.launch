@@ -1,0 +1,12 @@
+<launch>
+    <arg name="robot_name" default="girona1000"/>
+    <group ns="$(arg robot_name)">
+        <rosparam command="load" file="$(find hrov_martech2023)/config/tp/tasks.yaml"/>
+        <node name="tp_controller" pkg="iauv_kinematic_control" type="task_priority_controller" output="screen">
+            <remap from="robot_description" to="/$(arg robot_name)/robot_description"/>
+            <remap from="tp_controller/odometry" to="/$(arg robot_name)/navigator/odometry"/>
+            <remap from="tp_controller/joint_states" to="/$(arg robot_name)/joint_states"/>
+            <remap from="tp_controller/base/command" to="/$(arg robot_name)/controller/body_velocity_req"/>
+        </node>
+    </group>
+</launch>

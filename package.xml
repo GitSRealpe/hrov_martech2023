@@ -60,6 +60,7 @@
   <!-- <depend>cola2_core</depend> -->
   <!-- <depend>iauv_simulation</depend> -->
   <depend>girona_utils</depend>
+  <depend>iauv_kinematic_control</depend>
   <!-- cola pkgs -->
 
   <build_depend>message_generation</build_depend>

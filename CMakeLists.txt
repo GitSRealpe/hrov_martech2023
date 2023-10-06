@@ -85,6 +85,7 @@ list(APPEND CATKIN_SOURCES
     rviz_visual_tools
 
     girona_utils
+    iauv_kinematic_control
   )
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation actionlib genmsg)
@@ -148,7 +149,7 @@ list(APPEND LIBRARIES
 )
 
 add_library(${PROJECT_NAME}
-  # src/bt/print.cpp
+  src/bt/print.cpp
   src/bt/waitForMsg.cpp
   src/bt/followPath.cpp
   src/bt/planPath.cpp
@@ -191,6 +192,6 @@ target_link_libraries(tree_main ${catkin_LIBRARIES} ${PROJECT_NAME})
 catkin_install_python(PROGRAMS
   scripts/clustering.py
   # scripts/clustering_plot.py
-  # scripts/utils/path_manager.py
+  scripts/sm/sm.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

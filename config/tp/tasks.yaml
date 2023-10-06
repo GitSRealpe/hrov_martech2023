@@ -1,0 +1,81 @@
+tp_controller:
+    ### Robot definition
+    base_link: "girona1000/base_link"
+    actuated_base_dof: [0, 3, 4, 5]
+    base_velocity_limits: [0.2, 0.2, 0.1, 0.2]
+    manipulators:
+      manipulator1: 
+        id: "bravo"
+        base_link: "girona1000/bravo/base_link"
+        ee_link: "girona1000/bravo/link6"
+    joint_deadband_mitigation: false
+    joint_velocity_threshold: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.005, 0.005, 0.005, 0.1]
+    joint_minimum_velocity: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.02, 0.02, 0.02, 0.3]
+
+    ### Controller settings
+    # Base settings
+    rate: 30.0
+    dls_damping: 0.02
+    exact_inequalities: false
+    singularity_proof: false
+    singularity_threshold: 0.95
+    singularity_min_aligned_joints: 3
+    output_priority: 10
+
+    # Solution weighting
+    dof_use_penalty: [1.0, 2.0, 5.0, 3.0, 1.0, 1.0, 1.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    joint_close_to_limit_enabled: false
+    joint_close_to_limit_margin: 0.0174532
+    joint_close_to_limit_penalty: 1000.0
+    distance_dependent_base_velocity_enabled: false
+    distance_dependent_base_velocity_exponent: 1.0
+    distance_dependent_base_velocity_minimum_divider: 0.2
+    target_proximity_velocity_damping_enabled: false
+    target_proximity_velocity_damping_trigger_distance: 1.0
+    target_proximity_velocity_damping_exponent: 2.0
+    target_proximity_velocity_damping_min_factor: 0.1
+
+    #Task hierarchy
+    task_hierarchy:
+        # task0:
+        #     id: "joint_limits"
+        #     type: "JOINT_LIMITS"
+        #     margin: 0.015
+        #     gain: [1.0]
+        #     enabled: true
+        task1:
+            id: "auv_position"
+            type: "POSITION"
+            link_name: "girona1000/base_link"
+            gain: [1.0, 1.0, 1.0]
+            enabled: true
+        task2:
+            id: "auv_orientation"
+            type: "ORIENTATION"
+            link_name: "girona1000/base_link"
+            gain: [3.0, 3.0, 3.0]
+            enabled: true
+
+force_controller:
+  ### Feedforward force controller ###
+  feedforward_controller:
+    enabled: true
+    activation_threshold_factor: 0.3
+    cog_x: 0.2
+    cog_y: 0.0
+    cog_z: -0.4
+    force_ratio:
+        final: 0.8
+        initial: 0.2
+        ramp_duration: 3.0
+    # Cola2 req
+    output_priority: 20
+    pitch_torque_offset: 8.0
+    enable_force_axis:
+        x: true
+        y: false
+        z: true 
+    enable_torque_axis:
+        x: false
+        y: false
+        z: true
