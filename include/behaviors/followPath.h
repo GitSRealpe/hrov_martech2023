@@ -44,12 +44,15 @@ namespace BT
         // void callback(const std_msgs::String &msg) override;
         // virtual void callback(const std_msgs::String &msg);
         // virtual void callback(girona_utils::PathStatusConstPtr);
-        virtual void feedback(girona_utils::PathFeedbackConstPtr);
+        // virtual void feedback(girona_utils::PathFeedbackConstPtr);
+        virtual void feedback(girona_utils::PathActionFeedbackConstPtr);
 
         ros::NodeHandle nh_;
         // ros::Subscriber sub_;
+        ros::Subscriber subFeed;
         std::string msg_topic_;
-        girona_utils::PathFeedbackConstPtr pathStatus_;
+        // girona_utils::PathFeedbackConstPtr pathStatus_;
+        girona_utils::PathFeedback pathStatus_;
     };
 } // namespace BT
 
