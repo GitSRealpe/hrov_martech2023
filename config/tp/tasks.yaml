@@ -37,23 +37,41 @@ tp_controller:
 
     #Task hierarchy
     task_hierarchy:
-        # task0:
-        #     id: "joint_limits"
-        #     type: "JOINT_LIMITS"
-        #     margin: 0.015
-        #     gain: [1.0]
+        task0:
+            id: "joint_limits"
+            type: "JOINT_LIMITS"
+            margin: 0.015
+            gain: [1.0]
+            enabled: false
+        # task1:
+        #     id: "auv_position"
+        #     type: "POSITION"
+        #     link_name: "girona1000/base_link"
+        #     gain: [1.0, 1.0, 1.0]
         #     enabled: true
-        task1:
-            id: "auv_position"
-            type: "POSITION"
+        # task2:
+        #     id: "auv_orientation"
+        #     type: "ORIENTATION"
+        #     link_name: "girona1000/base_link"
+        #     gain: [3.0, 3.0, 3.0]
+        #     enabled: true
+        task3:
+            id: "auv_configuration"
+            type: "CONFIGURATION"
             link_name: "girona1000/base_link"
-            gain: [1.0, 1.0, 1.0]
+            gain: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
             enabled: true
-        task2:
-            id: "auv_orientation"
-            type: "ORIENTATION"
-            link_name: "girona1000/base_link"
-            gain: [3.0, 3.0, 3.0]
+        task4:
+            id: "bravo_ee_configuration"
+            type: "CONFIGURATION"
+            link_name: "girona1000/bravo/link6"
+            gain: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+            enabled: true
+        task5:
+            id: "bravo_joint_configuration"
+            type: "NOMINAL"
+            joint_names: ["girona1000/bravo/joint1", "girona1000/bravo/joint2", "girona1000/bravo/joint3", "girona1000/bravo/joint4", "girona1000/bravo/joint5", "girona1000/bravo/joint6"]
+            gain: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
             enabled: true
 
 force_controller:

@@ -7,6 +7,7 @@
             <remap from="tp_controller/odometry" to="/$(arg robot_name)/navigator/odometry"/>
             <remap from="tp_controller/joint_states" to="/$(arg robot_name)/joint_states"/>
             <remap from="tp_controller/base/command" to="/$(arg robot_name)/controller/body_velocity_req"/>
+            <remap from="tp_controller/bravo/command" to="/$(arg robot_name)/bravo/joint_velocity_controller/command"/>
         </node>
     </group>
 </launch>
