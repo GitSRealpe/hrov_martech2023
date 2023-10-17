@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<scenario>
+
+    <looks>
+        <look name="black" gray="0.05" roughness="0.2"/>
+        <look name="yellow" rgb="1.0 0.9 0.0" roughness="0.3"/>
+        <look name="gray" gray="0.5" roughness="0.4" metalness="0.5"/>
+        <look name="marker" gray="0.0" roughness="0.1" texture="markers/Cube.png"/>
+    </looks>
+
+    <robot name="valve_panel" fixed="true" self_collisions="false">
+        <base_link name="Panel" type="compound" physics="submerged">
+            <external_part name="HullBottom" type="model" physics="submerged">
+                <physical>
+                    <mesh filename="markers/marker.obj" scale="1.0"/>
+                    <thickness value="0.003"/>
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                </physical>
+                <visual>
+                    <mesh filename="markers/marker.obj" scale="1.0"/>
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                </visual>
+                <material name="Fiberglass"/>
+                <look name="marker"/>
+                <compound_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+            </external_part>
+        </base_link>
+
+        <link name="Valve1" type="compound" physics="submerged">
+            <external_part name="HandleA" type="cylinder" physics="submerged">
+                <dimensions radius="0.008" height="0.12"/>
+                <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                <material name="Aluminium"/>
+                <look name="gray"/>
+                <compound_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+            </external_part>
+            <external_part name="HandleB" type="cylinder" physics="submerged">
+                <dimensions radius="0.012" height="0.08"/>
+                <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                <material name="Aluminium"/>
+                <look name="gray"/>
+                <compound_transform rpy="1.571 0.0 0.0" xyz="0.0 0.0 0.06"/>
+            </external_part>
+        </link>
+
+        <joint name="valve1" type="revolute">
+            <parent name="Panel"/>
+            <child name="Valve1"/>
+            <origin rpy="0.0 0.0 0.0" xyz="0.0 0.25 0.04"/>
+            <axis xyz="0.0 0.0 1.0"/>
+            <damping value="2.0"/>
+        </joint>
+
+        <sensor name="Encoder1" type="encoder" rate="10">
+            <joint name="valve1"/>
+            <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+            <ros_publisher topic="/valve_panel/valve_state"/>
+        </sensor>
+
+        <world_transform rpy="$(arg start_orientation)" xyz="$(arg start_position)"/>
+    </robot>
+
+</scenario>

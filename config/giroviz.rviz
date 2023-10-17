@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /real_girona1
+        - /cluster_markers1/Status1
       Splitter Ratio: 0.5794117450714111
     Tree Height: 853
   - Class: rviz/Selection
@@ -76,12 +77,61 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        girona1000/base:
+        girona1000/back_thrusters_support:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         girona1000/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        girona1000/bravo/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        girona1000/bravo/finger_large_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        girona1000/bravo/finger_small_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        girona1000/bravo/jaws_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        girona1000/bravo/link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        girona1000/bravo/link2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        girona1000/bravo/link3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        girona1000/bravo/link4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        girona1000/bravo/link5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        girona1000/bravo/link6:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -98,22 +148,19 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        girona1000/imu_filter:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         girona1000/ins:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        girona1000/modem:
+        girona1000/laser_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        girona1000/multibeam:
+        girona1000/origin:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         girona1000/pressure:
           Alpha: 1
           Show Axes: false
@@ -122,22 +169,27 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         girona1000/thruster_1:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         girona1000/thruster_2:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         girona1000/thruster_3:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         girona1000/thruster_4:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
       Name: real_girona
       Robot Description: girona1000/robot_description
       TF Prefix: ""
@@ -278,7 +330,7 @@ Visualization Manager:
     - Class: rviz/InteractiveMarkers
       Enable Transparency: true
       Enabled: true
-      Name: InteractiveMarkers
+      Name: cluster_markers
       Show Axes: false
       Show Descriptions: true
       Show Visual Aids: false
@@ -291,6 +343,24 @@ Visualization Manager:
       Namespaces:
         {}
       Queue Size: 100
+      Value: true
+    - Class: rviz/InteractiveMarkers
+      Enable Transparency: true
+      Enabled: true
+      Name: valve_marker
+      Show Axes: false
+      Show Descriptions: true
+      Show Visual Aids: false
+      Update Topic: /intervention/update
+      Value: true
+    - Class: rviz/InteractiveMarkers
+      Enable Transparency: true
+      Enabled: true
+      Name: pipe_marker
+      Show Axes: false
+      Show Descriptions: true
+      Show Visual Aids: false
+      Update Topic: /pipe/update
       Value: true
   Enabled: true
   Global Options:
@@ -319,26 +389,38 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Class: rviz/Orbit
-      Distance: 4.5123090744018555
+      Class: rviz_animated_view_controller/Animated
+      Control Mode: Orbit
+      Distance: 2.3691976070404053
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
-      Field of View: 0.7853981852531433
-      Focal Point:
-        X: 1.2274274826049805
-        Y: 0.6751077771186829
-        Z: -0.25596603751182556
-      Focal Shape Fixed Size: true
-      Focal Shape Size: 0.05000000074505806
+      Eye:
+        X: 5.320897579193115
+        Y: 2.992598056793213
+        Z: 2.066791534423828
+      Focus:
+        X: 3.5288190841674805
+        Y: 1.990074872970581
+        Z: 0.8850557804107666
       Invert Z Axis: false
+      Maintain Vertical Axis: true
+      Mouse Enabled: true
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7197960019111633
+      Placement Topic: /rviz/camera_placement
+      Publish View Images During Animation: false
       Target Frame: <Fixed Frame>
-      Yaw: 0.9800000786781311
+      Trajectory Topic: /rviz/camera_trajectory
+      Transition Time: 0.5
+      Up:
+        X: 0
+        Y: 0
+        Z: 1
+      Window Height: 992
+      Window Width: 1204
     Saved:
       - Angle: 3.1349987983703613
         Class: rviz/TopDownOrtho

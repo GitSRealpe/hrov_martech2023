@@ -43,9 +43,15 @@
         <world_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
     </static>
 
-    <!-- <include file="$(find hrov_martech2023)/scenarios/pipes.scn">
+    <include file="$(find hrov_martech2023)/scenarios/pipes.scn">
         <arg name="position" value="0.0 0.0 5.0"/>
-    </include> -->
+    </include>
+
+    <include file="$(find hrov_martech2023)/scenarios/valve.scn">
+        <arg name="robot_name" value="valve"/>
+        <arg name="start_orientation" value="0.0 3.14 -1.57"/>
+        <arg name="start_position" value="0 0.69 3.7"/>
+    </include>
 
     <!-- <include file="$(find hrov_martech2023)/scenarios/girona1000.scn"> -->
     <include file="$(find hrov_martech2023)/scenarios/girona1000bravo.scn">
