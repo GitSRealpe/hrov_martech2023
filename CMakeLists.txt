@@ -179,6 +179,8 @@ add_script(odom2tf scripts/utils)
 add_script(clustering scripts)
 add_script(clustering_bt scripts)
 add_script(aruco_pose scripts)
+add_script(intervention scripts)
+add_script(pipefit scripts)
 
 target_link_libraries(${PROJECT_NAME} BT::behaviortree_cpp_v3  ${catkin_LIBRARIES})
 add_executable(tree_main scripts/bt/tree_main.cpp)
@@ -201,6 +203,7 @@ target_link_libraries(tree_main ${catkin_LIBRARIES} ${PROJECT_NAME})
 catkin_install_python(PROGRAMS
   scripts/clustering.py
   # scripts/clustering_plot.py
-  scripts/sm/sm.py
+  scripts/sm/exploration.py
+  scripts/sm/intervention.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
