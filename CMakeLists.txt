@@ -177,7 +177,7 @@ add_script(planning3dubs_srv scripts)
 add_script(odom2tf scripts/utils)
 
 add_script(clustering scripts)
-add_script(clustering_bt scripts)
+add_script(clustering_srv scripts)
 add_script(aruco_pose scripts)
 add_script(intervention scripts)
 add_script(pipefit scripts)

@@ -286,39 +286,8 @@ public:
     }
 };
 
-int main(int argc, char **argv)
+bool doCluster(std_srvs::Trigger::Request &, std_srvs::Trigger::Response &res)
 {
-
-    std::cout << "yeah clustering\n";
-    ros::init(argc, argv, "clustering");
-    ros::NodeHandle nh;
-
-    // pathClient = nh.serviceClient<hrov_martech2023::PlanGoal>("getPath");
-    // moveClient = nh.serviceClient<std_srvs::Trigger>("path_manager_server/startPath");
-
-    stagePub = nh.advertise<std_msgs::String>("/stage", 10);
-    goalPub = nh.advertise<hrov_martech2023::BaseGoal>("/base_goal", 10, true);
-
-    tfListener.reset(new tf2_ros::TransformListener(tfBuffer));
-    while (true)
-    {
-        try
-        {
-            t = tfBuffer.lookupTransform("girona1000/laser_link", "girona1000/base_link", ros::Time(0));
-            break;
-        }
-        catch (tf2::TransformException &ex)
-        {
-            // ROS_WARN("%s", ex.what());
-            ros::Duration(0.5).sleep();
-            continue;
-        }
-    }
-
-    // create an interactive marker server on the topic namespace pose_markers
-    server.reset(new interactive_markers::InteractiveMarkerServer("menu"));
-    init_menu();
-
     hrov_martech2023::PointArrayConstPtr points_msg = ros::topic::waitForMessage<hrov_martech2023::PointArray>("/octo/unk_cells");
     std::vector<Eigen::Vector3d> pts;
     for (geometry_msgs::Point pt : points_msg->puntos)
@@ -353,9 +322,47 @@ int main(int argc, char **argv)
         i++;
     }
 
+    res.success = true;
+    res.message = "computed " + std::to_string(gmm->means()->size()) + " clusters";
+
+    return true;
+}
+
+int main(int argc, char **argv)
+{
+
+    std::cout << "yeah clustering\n";
+    ros::init(argc, argv, "clustering");
+    ros::NodeHandle nh;
+
+    stagePub = nh.advertise<std_msgs::String>("/stage", 10);
+    goalPub = nh.advertise<hrov_martech2023::BaseGoal>("/base_goal", 10, true);
+
+    tfListener.reset(new tf2_ros::TransformListener(tfBuffer));
+    while (true)
+    {
+        try
+        {
+            t = tfBuffer.lookupTransform("girona1000/laser_link", "girona1000/base_link", ros::Time(0));
+            break;
+        }
+        catch (tf2::TransformException &ex)
+        {
+            // ROS_WARN("%s", ex.what());
+            ros::Duration(0.5).sleep();
+            continue;
+        }
+    }
+
+    // create an interactive marker server on the topic namespace pose_markers
+    server.reset(new interactive_markers::InteractiveMarkerServer("menu"));
+    init_menu();
+
+    ros::ServiceServer service = nh.advertiseService("getPath", doCluster);
+
     while (ros::ok())
     {
-        // pub.publish(marr);
+
         // ros::spinOnce();
         // ros::Duration(1).sleep();
         ros::spin();
