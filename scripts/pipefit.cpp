@@ -23,6 +23,62 @@
 std::shared_ptr<interactive_markers::InteractiveMarkerServer> server;
 interactive_markers::MenuHandler menu_handler;
 
+ros::Publisher stagePub, goalPub;
+
+void modCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
+{
+    ROS_INFO_STREAM("Goal Selected");
+    ROS_INFO_STREAM(feedback->marker_name);
+    ROS_INFO_STREAM(feedback->menu_entry_id);
+
+    interactive_markers::MenuHandler::EntryHandle handle = feedback->menu_entry_id;
+    interactive_markers::MenuHandler::CheckState state;
+    menu_handler.getCheckState(handle, state);
+
+    visualization_msgs::InteractiveMarker im;
+    server->get(feedback->marker_name, im);
+    if (state == interactive_markers::MenuHandler::CHECKED)
+    {
+        menu_handler.setCheckState(handle, interactive_markers::MenuHandler::UNCHECKED);
+        im.controls[0].markers[0].color.b = 0;
+        im.controls[0].markers[0].color.a = 1;
+        im.controls[1].interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
+        im.controls[2].interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
+        im.controls[3].interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
+        im.controls[4].interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
+    }
+    else
+    {
+        menu_handler.setCheckState(handle, interactive_markers::MenuHandler::CHECKED);
+        im.controls[0].markers[0].color.b = 1;
+        im.controls[0].markers[0].color.a = 0.5;
+        im.controls[1].interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_AXIS;
+        im.controls[2].interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_AXIS;
+        im.controls[3].interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_AXIS;
+        im.controls[4].interaction_mode = visualization_msgs::InteractiveMarkerControl::ROTATE_AXIS;
+    }
+    server->insert(im);
+    server->applyChanges();
+    menu_handler.reApply(*server);
+    server->applyChanges();
+}
+
+void moveCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
+{
+    std::cout << "requesting path following\n";
+    std_msgs::String stage;
+    stage.data = "followPath";
+    stagePub.publish(stage);
+}
+
+interactive_markers::MenuHandler::EntryHandle h_mode_last;
+
+void init_menu()
+{
+    interactive_markers::MenuHandler::EntryHandle check_handle = menu_handler.insert("Edit Position", &modCb);
+    menu_handler.setCheckState(check_handle, interactive_markers::MenuHandler::UNCHECKED);
+}
+
 void markerFeedback(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
 {
     feedback->client_id;
@@ -47,7 +103,7 @@ public:
 
         // pipe model
         visualization_msgs::InteractiveMarkerControl control;
-        control.interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
+        control.interaction_mode = visualization_msgs::InteractiveMarkerControl::BUTTON;
         control.always_visible = true;
         visualization_msgs::Marker marker;
         marker.type = visualization_msgs::Marker::MESH_RESOURCE;
@@ -68,7 +124,7 @@ public:
         control = visualization_msgs::InteractiveMarkerControl();
         control.orientation.w = 1;
         control.name = "move_x";
-        control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_AXIS;
+        control.interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
         int_marker.controls.push_back(control);
 
         control.orientation.w = 0.7071;
@@ -76,7 +132,7 @@ public:
         control.orientation.y = 0;
         control.orientation.z = 0.7071;
         control.name = "move_y";
-        control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_AXIS;
+        control.interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
         int_marker.controls.push_back(control);
 
         control.orientation.w = 0.7071;
@@ -84,10 +140,10 @@ public:
         control.orientation.y = 0.7071;
         control.orientation.z = 0;
         control.name = "rotate_z";
-        control.interaction_mode = visualization_msgs::InteractiveMarkerControl::ROTATE_AXIS;
+        control.interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
         int_marker.controls.push_back(control);
         control.name = "move_z";
-        control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_AXIS;
+        control.interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
         int_marker.controls.push_back(control);
 
         // add the interactive marker to our collection &
@@ -110,6 +166,7 @@ int main(int argc, char **argv)
 
     // create an interactive marker server on the topic namespace pose_markers
     server.reset(new interactive_markers::InteractiveMarkerServer("pipe", "pipe"));
+    init_menu();
 
     geometry_msgs::Pose pipespose;
     pipespose.orientation.w = 0;
