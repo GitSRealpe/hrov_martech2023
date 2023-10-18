@@ -358,7 +358,7 @@ int main(int argc, char **argv)
     server.reset(new interactive_markers::InteractiveMarkerServer("menu"));
     init_menu();
 
-    ros::ServiceServer service = nh.advertiseService("getPath", doCluster);
+    ros::ServiceServer service = nh.advertiseService("getClusters", doCluster);
 
     while (ros::ok())
     {
