@@ -7,36 +7,31 @@ import actionlib.simple_action_client
 from std_msgs.msg import String
 from hrov_martech2023.msg import BaseGoal
 from hrov_martech2023.srv import PlanGoal, PlanGoalRequest
+from std_srvs.srv import Trigger
 from girona_utils.msg import PathAction, PathGoal
 from nav_msgs.msg import Path
 
-value = 1
-
 
 class IAUVExploration(StateMachine):
-    "A traffic light machine"
-
-    clustering = State(initial=True)
+    start = State(initial=True)
+    clustering = State()
     planning = State()
     following = State()
 
-    doCluster = following.to(clustering)
+    doCluster = start.to(clustering) | following.to(clustering)
     planPath = clustering.to(planning) | planning.to(planning) | following.to(planning)
     # rePlan = planning.to(planning) | following.to(planning)
     followPath = planning.to(following)
-
-    # cycle = (
-    #     clustering.to(planning)
-    #     | rePlan
-    #     | planning.to(following)
-    #     | following.to(clustering)
-    # )
 
     def on_enter_state(self, event, state):
         print(f"Now at state '{state.id}'")
 
     def on_exit_state(self, event, state):
         print(f"Exiting '{state.id}' state from '{event}' event.")
+
+    def on_enter_clustering(self):
+        clusterSrv = rospy.ServiceProxy("getClusters", Trigger)
+        clusterSrv.call()
 
     def on_enter_planning(self):
         goal: BaseGoal = rospy.wait_for_message("/base_goal", BaseGoal)
