@@ -15,7 +15,7 @@
 
 #include <sensor_msgs/CameraInfo.h>
 
-static const std::string OPENCV_WINDOW = "Image window";
+static const std::string OPENCV_WINDOW = "Finestra";
 
 struct CamData
 {
@@ -36,12 +36,12 @@ class ImageConverter
 public:
     ImageConverter() : it_(nh_)
     {
-        image_sub_ = it_.subscribe("/taula/camara/image_color", 1, &ImageConverter::imageCb, this);
-        cam_info_sub_ = nh_.subscribe("/taula/camara/camera_info", 1, &ImageConverter::cameraInfoCB, this);
+        image_sub_ = it_.subscribe("/girona1000/arm_camara/image_color", 1, &ImageConverter::imageCb, this);
+        cam_info_sub_ = nh_.subscribe("/girona1000/arm_camara/camera_info", 1, &ImageConverter::cameraInfoCB, this);
 
         image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
-        cv::namedWindow(OPENCV_WINDOW);
+        cv::namedWindow(OPENCV_WINDOW, cv::WindowFlags::WINDOW_AUTOSIZE);
     }
 
     ~ImageConverter()
@@ -68,6 +68,7 @@ public:
         // std::cout << caminfo.D.data() << "\n";
 
         cam_info_sub_.shutdown();
+        ROS_INFO("Done calibration");
     }
 
     void imageCb(const sensor_msgs::ImageConstPtr &msg)
@@ -86,9 +87,6 @@ public:
         cv::Mat image_rect = cv_ptr->image;
         // cv::undistort(cv_ptr->image, image_rect, camData.K, camData.D);
 
-        // Output modified video stream
-        // image_pub_.publish(cv_ptr->toImageMsg());
-
         std::vector<int> markerIds;
         std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
         cv::Ptr<cv::aruco::DetectorParameters> parameters = cv::aruco::DetectorParameters::create();
@@ -104,7 +102,21 @@ public:
             auto rvec = rvecs[i];
             auto tvec = tvecs[i];
             cv::aruco::drawAxis(image_rect, camData.K, camData.D, rvec, tvec, 0.1);
+            std::cout << tvecs[i] << "\n";
         }
+
+        cv_bridge::CvImage out_msg;
+        out_msg.header = cv_ptr->header;     // Same timestamp and tf frame as input image
+        out_msg.encoding = cv_ptr->encoding; // Or whatever
+        out_msg.image = image_rect;          // Your cv::Mat
+        // Output modified video stream
+        image_pub_.publish(out_msg.toImageMsg());
+
+        // image_rect.rows=heigth
+        // image_rect.cols=width
+        cv::arrowedLine(image_rect, {int(image_rect.cols / 2), int(image_rect.rows / 2)}, {image_rect.cols, int(image_rect.rows / 2)}, CV_RGB(255, 0, 0), 2);
+
+        cv::arrowedLine(image_rect, {int(image_rect.cols / 2), int(image_rect.rows / 2)}, {image_rect.cols / 2, int(image_rect.rows)}, CV_RGB(0, 255, 0), 2);
 
         // Update GUI Window
         cv::imshow(OPENCV_WINDOW, image_rect);
