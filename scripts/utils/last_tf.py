@@ -38,7 +38,7 @@ if __name__ == "__main__":
         valve.header.frame_id = "last_seen"
         valve.child_frame_id = "valve"
         valve.header.stamp = rospy.Time.now()
-        valve.transform.translation.y = -0.25
+        valve.transform.translation.y = -0.30
         valve.transform.rotation.w = 1
         br.sendTransform(valve)
 
