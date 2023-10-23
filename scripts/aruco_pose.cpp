@@ -1,19 +1,28 @@
 #include <ros/ros.h>
-#include <cv_bridge/cv_bridge.h>
+
 #include <image_transport/image_transport.h>
 #include <image_geometry/pinhole_camera_model.h>
-#include <tf/transform_listener.h>
+// #include <tf/transform_listener.h>
 #include <sensor_msgs/image_encodings.h>
+#include <sensor_msgs/CameraInfo.h>
 
+#include <cv_bridge/cv_bridge.h>
 #include <opencv2/aruco.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d.hpp>
 
 #include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
 
-#include <sensor_msgs/CameraInfo.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <geometry_msgs/TransformStamped.h>
+
+// #include <tf2_eigen/tf2_eigen.h>
+#include <tf2/convert.h>
+#include <tf2/LinearMath/Matrix3x3.h>
+#include <geometry_msgs/Pose.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 static const std::string OPENCV_WINDOW = "Finestra";
 
@@ -47,6 +56,31 @@ public:
     ~ImageConverter()
     {
         cv::destroyWindow(OPENCV_WINDOW);
+    }
+
+    void tf_pub(cv::Vec3d pos, cv::Vec3d rot, int id)
+    {
+
+        static tf2_ros::TransformBroadcaster br;
+        geometry_msgs::TransformStamped transformStamped;
+
+        transformStamped.header.stamp = ros::Time::now();
+        transformStamped.header.frame_id = "girona1000/bravo/camera";
+        transformStamped.child_frame_id = std::to_string(id);
+        transformStamped.transform.translation.x = pos[0];
+        transformStamped.transform.translation.y = pos[1];
+        transformStamped.transform.translation.z = pos[2];
+
+        cv::Mat rotM(3, 3, CV_64FC1);
+        cv::Rodrigues(rot, rotM);
+        tf2::Matrix3x3 tf_rotM(rotM.at<double>(0, 0), rotM.at<double>(0, 1), rotM.at<double>(0, 2),
+                               rotM.at<double>(1, 0), rotM.at<double>(1, 1), rotM.at<double>(1, 2),
+                               rotM.at<double>(2, 0), rotM.at<double>(2, 1), rotM.at<double>(2, 2));
+        tf2::Quaternion tf_quat;
+        tf_rotM.getRotation(tf_quat);
+        tf2::convert(tf_quat, transformStamped.transform.rotation);
+
+        br.sendTransform(transformStamped);
     }
 
     void cameraInfoCB(const sensor_msgs::CameraInfo &caminfo)
@@ -95,14 +129,18 @@ public:
         cv::aruco::drawDetectedMarkers(image_rect, markerCorners, markerIds);
 
         std::vector<cv::Vec3d> rvecs, tvecs;
-        cv::aruco::estimatePoseSingleMarkers(markerCorners, 0.05, camData.K, camData.D, rvecs, tvecs);
+        cv::aruco::estimatePoseSingleMarkers(markerCorners, 0.12, camData.K, camData.D, rvecs, tvecs);
 
         for (int i = 0; i < rvecs.size(); ++i)
         {
             auto rvec = rvecs[i];
             auto tvec = tvecs[i];
-            cv::aruco::drawAxis(image_rect, camData.K, camData.D, rvec, tvec, 0.1);
+            cv::aruco::drawAxis(image_rect, camData.K, camData.D, rvec, tvec, 0.06);
+            std::cout << "position: in cam frame: \n";
             std::cout << tvecs[i] << "\n";
+            std::cout << "orientation in cam frame: \n";
+            std::cout << rvecs[i] << "\n";
+            tf_pub(tvecs[i], rvecs[i], markerIds[i]);
         }
 
         cv_bridge::CvImage out_msg;
@@ -112,8 +150,6 @@ public:
         // Output modified video stream
         image_pub_.publish(out_msg.toImageMsg());
 
-        // image_rect.rows=heigth
-        // image_rect.cols=width
         cv::arrowedLine(image_rect, {int(image_rect.cols / 2), int(image_rect.rows / 2)}, {image_rect.cols, int(image_rect.rows / 2)}, CV_RGB(255, 0, 0), 2);
 
         cv::arrowedLine(image_rect, {int(image_rect.cols / 2), int(image_rect.rows / 2)}, {image_rect.cols / 2, int(image_rect.rows)}, CV_RGB(0, 255, 0), 2);
