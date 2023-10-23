@@ -12,6 +12,11 @@
 
     <!-- Static transform -->
     <node name="world2ned" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 3.1415 world world_ned 100"/>
+    <!-- bravo cam -->
+    <!-- <node name="ee_to_cam" pkg="tf" type="static_transform_publisher" args="-0.03551 0.1266 0.05837 0.1015 0.17912 -0.563859 0.79979 girona1000/bravo/link6 girona1000/bravo/camera 100"/> -->
+    <node name="ee_to_cam" pkg="tf" type="static_transform_publisher" args="0 0.1 -0.06 3.1416 0 0 girona1000/bravo/jaws_base_link girona1000/bravo/camera 100"/>
+    <!-- <node name="tcptf" pkg="tf" type="static_transform_publisher" args="0 0.0 0.2 3.1416 0 0 girona1000/bravo/link6 girona1000/bravo/tcp 100"/> -->
+
 
     <!-- Namespace with robot name -->
     <group ns="$(arg robot_name)">

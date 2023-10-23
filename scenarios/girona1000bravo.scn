@@ -312,12 +312,12 @@
 			<ros_publisher topic="/$(arg robot_name)/navigator/navigation_sim" odometry_topic="/$(arg robot_name)/navigator/odometry"/>
 		</sensor>
 
-		<sensor name="camara" type="camera" rate="10.0">
-			<link name="Vehicle"/>
-			<origin rpy="1.57 0.0 1.2" xyz="0.38 0.1 0.1"/>
+		<!-- <sensor name="camara" type="camera" rate="10.0">
+			<link name="RB7Link6"/>
+			<origin rpy="0.3788742 0.172916 -1.2613934" xyz="-0.03551 0.1266 0.05837"/>
 			<specs resolution_x="800" resolution_y="600" horizontal_fov="65.0"/>
 			<ros_publisher topic="/$(arg robot_name)/camara"/>
-		</sensor>
+		</sensor> -->
 
 		<!-- <sensor name="laser_link" rate="2.0" type="multibeam">
 			<specs fov="60.0" steps="64"/>
@@ -695,7 +695,7 @@
 
 		<!-- fin tool -->
 
-		<!-- arm to table -->
+		<!-- arm to vehicle -->
 		<joint name="AUVToRB7" type="fixed">
 			<parent name="Vehicle"/>
 			<child name="RB7BaseLink"/>
@@ -802,7 +802,7 @@
 			<joint name="bravo/finger_large_joint"/>
 		</ros_control_interface>
 
-		<sensor name="arm_camara" type="camera" rate="10.0">
+		<sensor name="bravo/camera" type="camera" rate="10.0">
 			<link name="RB7JawsBase"/>
 			<origin rpy="0.0 0.0 3.1416" xyz="0 0.06 0.1"/>
 			<specs resolution_x="800" resolution_y="600" horizontal_fov="65.0"/>
