@@ -65,7 +65,7 @@ tp_controller:
             id: "bravo_ee_configuration"
             type: "CONFIGURATION"
             link_name: "girona1000/bravo/link6"
-            gain: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+            gain: [1.0, 1.0, 0.0, 1.0, 1.0, 1.0]
             enabled: true
         task5:
             id: "bravo_joint_configuration"
