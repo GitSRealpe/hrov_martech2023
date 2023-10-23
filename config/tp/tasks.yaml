@@ -7,7 +7,7 @@ tp_controller:
       manipulator1: 
         id: "bravo"
         base_link: "girona1000/bravo/base_link"
-        ee_link: "girona1000/bravo/link6"
+        ee_link: "girona1000/bravo/tcp"
     joint_deadband_mitigation: false
     joint_velocity_threshold: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.005, 0.005, 0.005, 0.1]
     joint_minimum_velocity: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.02, 0.02, 0.02, 0.3]
