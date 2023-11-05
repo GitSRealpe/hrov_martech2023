@@ -22,6 +22,9 @@
 #include <eigen_conversions/eigen_msg.h>
 #include <tf_conversions/tf_eigen.h>
 
+#include <actionlib/client/simple_action_client.h>
+#include <girona_utils/PIDAction.h>
+
 std::shared_ptr<tf2_ros::TransformListener> tfListener;
 tf2_ros::Buffer tfBuffer;
 geometry_msgs::TransformStamped t;
@@ -30,6 +33,8 @@ std::shared_ptr<interactive_markers::InteractiveMarkerServer> server;
 interactive_markers::MenuHandler menu_handler;
 // ros::ServiceClient pathClient;
 // ros::ServiceClient moveClient;
+
+std::shared_ptr<actionlib::SimpleActionClient<girona_utils::PIDAction>> pidClient;
 
 ros::Publisher stagePub, goalPub;
 
@@ -102,7 +107,7 @@ void reqCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback
     stagePub.publish(stage);
 }
 
-void moveCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
+void followCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
 {
     std::cout << "requesting path following\n";
     std_msgs::String stage;
@@ -110,10 +115,32 @@ void moveCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedbac
     stagePub.publish(stage);
 }
 
+void moveCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
+{
+    std::cout << "moving to point\n";
+    Eigen::Isometry3d m1;
+    tf::poseMsgToEigen(feedback->pose, m1);
+    geometry_msgs::Transform dummy;
+    dummy.translation.x = t.transform.translation.y - RANGE;
+    dummy.translation.y = t.transform.translation.x;
+    dummy.translation.z = t.transform.translation.z;
+    Eigen::Isometry3d m2;
+    tf::transformMsgToEigen(dummy, m2);
+    Eigen::Isometry3d goalM = m1 * m2;
+
+    girona_utils::PIDGoal goal;
+    tf::poseEigenToMsg(goalM, goal.goal);
+    // goal.goal = feedback->pose;
+    std::cout << "before the goal\n";
+    pidClient->sendGoal(goal);
+    std::cout << "after the goal\n";
+}
+
 void init_menu()
 {
     menu_handler.insert("Select as goal", &modCb);
     menu_handler.insert("Request Path", &reqCb);
+    menu_handler.insert("Follow Path", &followCb);
     menu_handler.insert("Move here", &moveCb);
 }
 
@@ -288,6 +315,8 @@ public:
 
 bool doCluster(std_srvs::Trigger::Request &, std_srvs::Trigger::Response &res)
 {
+    server->clear();
+    server->applyChanges();
     hrov_martech2023::PointArrayConstPtr points_msg = ros::topic::waitForMessage<hrov_martech2023::PointArray>("/octo/unk_cells");
     std::vector<Eigen::Vector3d> pts;
     for (geometry_msgs::Point pt : points_msg->puntos)
@@ -334,6 +363,11 @@ int main(int argc, char **argv)
     std::cout << "yeah clustering\n";
     ros::init(argc, argv, "clustering");
     ros::NodeHandle nh;
+
+    pidClient = std::make_shared<actionlib::SimpleActionClient<girona_utils::PIDAction>>("pid_controller");
+    ROS_INFO("Waiting for PID action server to start.");
+    pidClient->waitForServer(); // will wait for infinite time
+    ROS_INFO("PID Action server is active.");
 
     stagePub = nh.advertise<std_msgs::String>("/stage", 10);
     goalPub = nh.advertise<hrov_martech2023::BaseGoal>("/base_goal", 10, true);
