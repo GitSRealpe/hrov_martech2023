@@ -110,7 +110,7 @@ public:
         cv_bridge::CvImagePtr cv_ptr;
         try
         {
-            cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+            cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::MONO8);
         }
         catch (cv_bridge::Exception &e)
         {
@@ -120,6 +120,7 @@ public:
 
         cv::Mat image_rect = cv_ptr->image;
         // cv::undistort(cv_ptr->image, image_rect, camData.K, camData.D);
+        // cv::equalizeHist(image_rect, image_rect);
 
         std::vector<int> markerIds;
         std::vector<std::vector<cv::Point2f>> markerCorners, rejectedCandidates;
@@ -130,6 +131,8 @@ public:
 
         std::vector<cv::Vec3d> rvecs, tvecs;
         cv::aruco::estimatePoseSingleMarkers(markerCorners, 0.12, camData.K, camData.D, rvecs, tvecs);
+
+        cv::cvtColor(image_rect, image_rect, cv::COLOR_GRAY2BGR);
 
         for (int i = 0; i < rvecs.size(); ++i)
         {
